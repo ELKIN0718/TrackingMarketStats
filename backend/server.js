@@ -287,6 +287,76 @@ app.get('/api/meta/status/:restaurant_id', async (req, res) => {
 });
 //Fin Verificar si exite meta
 
+//Actualizacion automatica
+async function syncMetaInsightsForAllRestaurants() {
+  try {
+    const result = await pool.query(`
+      SELECT restaurant_id, access_token
+      FROM meta_connections
+    `);
+
+    for (const row of result.rows) {
+      const { restaurant_id, access_token } = row;
+
+      try {
+        const adAccountsRes = await axios.get('https://graph.facebook.com/v20.0/me/adaccounts', {
+          params: {
+            access_token,
+            fields: 'id,name,account_status,currency',
+          },
+        });
+
+        const adAccounts = adAccountsRes.data.data || [];
+        if (!adAccounts.length) continue;
+
+        for (const account of adAccounts) {
+          const cleanAdAccountId = account.id.replace('act_', '');
+
+          const insightsRes = await axios.get(
+            `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
+            {
+              params: {
+                access_token,
+                fields: 'campaign_name,impressions,reach,clicks,spend,ctr,cpc',
+                date_preset: 'last_30d'
+              }
+            }
+          );
+
+          const ageInsightsRes = await axios.get(
+            `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
+            {
+              params: {
+                access_token,
+                fields: 'impressions,reach,clicks,spend',
+                breakdowns: 'age,gender',
+                date_preset: 'last_30d'
+              }
+            }
+          );
+
+          console.log(
+            `Meta sync OK | restaurant_id=${restaurant_id} | account=${account.id} | campaigns=${(insightsRes.data.data || []).length} | ages=${(ageInsightsRes.data.data || []).length}`
+          );
+
+          // Aquí después puedes guardar en BD si quieres cachear resultados.
+        }
+      } catch (error) {
+        console.error(`Error sincronizando restaurante ${restaurant_id}:`, error.response?.data || error.message);
+      }
+    }
+  } catch (error) {
+    console.error('Error general en syncMetaInsightsForAllRestaurants:', error.message);
+  }
+}
+
+cron.schedule('0 6,14,22 * * *', async () => {
+  console.log('Ejecutando sincronización automática de Meta...');
+  await syncMetaInsightsForAllRestaurants();
+});
+syncMetaInsightsForAllRestaurants();
+//Fin Actualizacion Automatica
+
 //Server
 const PORT = process.env.PORT || 3000;
 

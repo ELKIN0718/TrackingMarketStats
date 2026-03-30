@@ -15,6 +15,7 @@ const kpiSpend = document.getElementById('kpiSpend');
 const kpiImpressions = document.getElementById('kpiImpressions');
 const kpiReach = document.getElementById('kpiReach');
 const kpiClicks = document.getElementById('kpiClicks');
+const refreshAdsBtn = document.getElementById('refreshAdsBtn');
 //fin graficas
 
 let campaignChartInstance = null;
@@ -332,6 +333,9 @@ async function loadProfile() {
 
     //Graficas
     await loadAdsDashboard(restaurantId);
+    setInterval(() => {
+      loadAdsDashboard(restaurantId);
+    }, 8 * 60 * 60 * 1000);
     //Fin Graficas
 
     if (metaConnected === 'connected') {
@@ -423,3 +427,36 @@ if (ageChartToggle) {
   });
 }
 //Fin Boton para cambiar grafica de edades 
+
+//Actualizcion manual
+async function refreshAdsDataManually() {
+  const restaurantId = localStorage.getItem('restaurant_id');
+
+  if (!restaurantId) {
+    setMetaStatus('status-error', 'No se encontró el restaurante logueado.');
+    return;
+  }
+
+  if (refreshAdsBtn) {
+    refreshAdsBtn.disabled = true;
+    refreshAdsBtn.textContent = 'Actualizando...';
+  }
+
+  try {
+    await loadAdsDashboard(restaurantId);
+    setMetaStatus('status-success', 'Datos de Meta actualizados manualmente.');
+  } catch (error) {
+    console.error('Error en actualización manual:', error);
+    setMetaStatus('status-error', 'No se pudieron actualizar los datos.');
+  } finally {
+    if (refreshAdsBtn) {
+      refreshAdsBtn.disabled = false;
+      refreshAdsBtn.textContent = 'Actualizar datos';
+    }
+  }
+}
+
+if (refreshAdsBtn) {
+  refreshAdsBtn.addEventListener('click', refreshAdsDataManually);
+}
+//Fin actualizcion manual
