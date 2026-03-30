@@ -10,13 +10,14 @@ if (!token) {
 const btnVincularMeta = document.getElementById('btnVincularMeta');
 const metaStatus = document.getElementById('metaStatus');
 
-//graficas
+// graficas
 const kpiSpend = document.getElementById('kpiSpend');
 const kpiImpressions = document.getElementById('kpiImpressions');
 const kpiReach = document.getElementById('kpiReach');
 const kpiClicks = document.getElementById('kpiClicks');
 const refreshAdsBtn = document.getElementById('refreshAdsBtn');
-//fin graficas
+const campaignSelect = document.getElementById('campaignSelect');
+// fin graficas
 
 let campaignChartInstance = null;
 let spendChartInstance = null;
@@ -28,6 +29,10 @@ let ageMaleValues = [];
 let ageFemaleValues = [];
 
 const ageChartToggle = document.getElementById('ageChartToggle');
+
+let allCampaignRows = [];
+let currentRestaurantId = null;
+let currentAdAccountId = null;
 
 function setMetaStatus(type, message) {
   if (!metaStatus) return;
@@ -60,7 +65,7 @@ function setMetaButtonState({ disabled, text, styleClass }) {
   }
 }
 
-//Graficas
+// Graficas
 function formatCurrency(value) {
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -144,7 +149,7 @@ function renderSpendChart(labels, data) {
   });
 }
 
-//Grafias Edad
+// Graficas Edad
 function renderAgeChart(labels, maleData, femaleData) {
   const canvas = document.getElementById('ageChart');
   if (!canvas) return;
@@ -226,7 +231,81 @@ function renderAgeChart(labels, maleData, femaleData) {
     ageChartToggle.textContent = ageChartType === 'bar' ? 'Ver pastel' : 'Ver barras';
   }
 }
-//Fin Grafias Edad
+// Fin Graficas Edad
+
+function populateCampaignSelect(rows) {
+  if (!campaignSelect) return;
+
+  campaignSelect.innerHTML = '<option value="all">Todas las campañas</option>';
+
+  const uniqueCampaigns = [];
+  const seen = new Set();
+
+  rows.forEach(row => {
+    const campaignId = String(row.campaign_id || '').trim();
+    const campaignName = row.campaign_name || 'Sin nombre';
+
+    if (!campaignId || seen.has(campaignId)) return;
+
+    seen.add(campaignId);
+    uniqueCampaigns.push({
+      campaign_id: campaignId,
+      campaign_name: campaignName
+    });
+  });
+
+  uniqueCampaigns.forEach(campaign => {
+    const option = document.createElement('option');
+    option.value = campaign.campaign_id;
+    option.textContent = campaign.campaign_name;
+    campaignSelect.appendChild(option);
+  });
+}
+
+function updateDashboardWithCampaignRows(rows) {
+  const totalSpend = rows.reduce((sum, row) => sum + Number(row.spend || 0), 0);
+  const totalImpressions = rows.reduce((sum, row) => sum + Number(row.impressions || 0), 0);
+  const totalReach = rows.reduce((sum, row) => sum + Number(row.reach || 0), 0);
+  const totalClicks = rows.reduce((sum, row) => sum + Number(row.clicks || 0), 0);
+
+  if (kpiSpend) kpiSpend.textContent = formatCurrency(totalSpend);
+  if (kpiImpressions) kpiImpressions.textContent = formatNumber(totalImpressions);
+  if (kpiReach) kpiReach.textContent = formatNumber(totalReach);
+  if (kpiClicks) kpiClicks.textContent = formatNumber(totalClicks);
+
+  const campaignLabels = rows.map(row => row.campaign_name || 'Sin nombre');
+  const clicksData = rows.map(row => Number(row.clicks || 0));
+  const spendData = rows.map(row => Number(row.spend || 0));
+
+  renderCampaignChart(campaignLabels, clicksData);
+  renderSpendChart(campaignLabels, spendData);
+}
+
+async function applyCampaignFilter() {
+  if (!campaignSelect) return;
+
+  const selectedCampaignId = String(campaignSelect.value).trim();
+
+  if (selectedCampaignId === 'all') {
+    updateDashboardWithCampaignRows(allCampaignRows);
+
+    if (currentRestaurantId && currentAdAccountId) {
+      await loadAgeInsights(currentRestaurantId, currentAdAccountId, 'all');
+    }
+
+    return;
+  }
+
+  const filteredRows = allCampaignRows.filter(row => {
+    return String(row.campaign_id || '').trim() === selectedCampaignId;
+  });
+
+  updateDashboardWithCampaignRows(filteredRows);
+
+  if (currentRestaurantId && currentAdAccountId) {
+    await loadAgeInsights(currentRestaurantId, currentAdAccountId, selectedCampaignId);
+  }
+}
 
 async function loadAdsDashboard(restaurantId) {
   try {
@@ -238,6 +317,8 @@ async function loadAdsDashboard(restaurantId) {
     }
 
     const firstAccountId = adAccountsResult.data[0].id.replace('act_', '');
+    currentRestaurantId = restaurantId;
+    currentAdAccountId = firstAccountId;
 
     const insightsRes = await fetch(`http://localhost:3000/api/meta/insights/${restaurantId}/${firstAccountId}`);
     const insightsResult = await insightsRes.json();
@@ -247,44 +328,38 @@ async function loadAdsDashboard(restaurantId) {
     }
 
     const rows = insightsResult.data;
+    allCampaignRows = rows;
 
-    const totalSpend = rows.reduce((sum, row) => sum + Number(row.spend || 0), 0);
-    const totalImpressions = rows.reduce((sum, row) => sum + Number(row.impressions || 0), 0);
-    const totalReach = rows.reduce((sum, row) => sum + Number(row.reach || 0), 0);
-    const totalClicks = rows.reduce((sum, row) => sum + Number(row.clicks || 0), 0);
+    populateCampaignSelect(rows);
+    updateDashboardWithCampaignRows(rows);
 
-    if (kpiSpend) kpiSpend.textContent = formatCurrency(totalSpend);
-    if (kpiImpressions) kpiImpressions.textContent = formatNumber(totalImpressions);
-    if (kpiReach) kpiReach.textContent = formatNumber(totalReach);
-    if (kpiClicks) kpiClicks.textContent = formatNumber(totalClicks);
-
-    const campaignLabels = rows.map(row => row.campaign_name || 'Sin nombre');
-    const clicksData = rows.map(row => Number(row.clicks || 0));
-    const spendData = rows.map(row => Number(row.spend || 0));
-
-    renderCampaignChart(campaignLabels, clicksData);
-    renderSpendChart(campaignLabels, spendData);
-    await loadAgeInsights(restaurantId, firstAccountId);
-
+    await loadAgeInsights(restaurantId, firstAccountId, 'all');
   } catch (error) {
     console.error('Error cargando dashboard de publicidad:', error);
   }
 }
-//Fin Graficas
+// Fin Graficas
 
-//Graficas Edad
-async function loadAgeInsights(restaurantId, adAccountId) {
+// Graficas Edad
+async function loadAgeInsights(restaurantId, adAccountId, campaignId = 'all') {
   try {
-    const res = await fetch(`http://localhost:3000/api/meta/insights-age/${restaurantId}/${adAccountId}`);
-    const result = await res.json();
+    let url = `http://localhost:3000/api/meta/insights-age/${restaurantId}/${adAccountId}`;
 
-    if (!res.ok || !result.data || result.data.length === 0) {
-      return;
+    if (campaignId && campaignId !== 'all') {
+      url += `?campaign_id=${encodeURIComponent(campaignId)}`;
     }
+
+    const res = await fetch(url);
+    const result = await res.json();
 
     const ageRanges = ['13-17', '18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const maleData = new Array(ageRanges.length).fill(0);
     const femaleData = new Array(ageRanges.length).fill(0);
+
+    if (!res.ok || !result.data || result.data.length === 0) {
+      renderAgeChart(ageRanges, maleData, femaleData);
+      return;
+    }
 
     result.data.forEach(row => {
       const age = row.age || 'Desconocido';
@@ -306,8 +381,7 @@ async function loadAgeInsights(restaurantId, adAccountId) {
     console.error('Error cargando insights por edad:', error);
   }
 }
-//Fin Graficas Edad
-
+// Fin Graficas Edad
 
 async function loadProfile() {
   try {
@@ -331,17 +405,14 @@ async function loadProfile() {
 
     await loadMetaStatus(restaurantId);
 
-    //Graficas
     await loadAdsDashboard(restaurantId);
     setInterval(() => {
       loadAdsDashboard(restaurantId);
     }, 8 * 60 * 60 * 1000);
-    //Fin Graficas
 
     if (metaConnected === 'connected') {
       setMetaStatus('status-success', 'Meta vinculada correctamente.');
     }
-
   } catch (error) {
     console.error(error);
     localStorage.removeItem('token');
@@ -417,7 +488,8 @@ if (btnVincularMeta) {
     window.location.href = `http://localhost:3000/api/meta/connect?restaurant_id=${restaurantId}`;
   });
 }
-//Boton para cambiar grafica de edades 
+
+// Boton para cambiar grafica de edades
 if (ageChartToggle) {
   ageChartToggle.addEventListener('click', () => {
     if (!ageChartLabels.length) return;
@@ -426,9 +498,9 @@ if (ageChartToggle) {
     renderAgeChart(ageChartLabels, ageMaleValues, ageFemaleValues);
   });
 }
-//Fin Boton para cambiar grafica de edades 
+// Fin Boton para cambiar grafica de edades
 
-//Actualizcion manual
+// Actualizacion manual
 async function refreshAdsDataManually() {
   const restaurantId = localStorage.getItem('restaurant_id');
 
@@ -459,4 +531,8 @@ async function refreshAdsDataManually() {
 if (refreshAdsBtn) {
   refreshAdsBtn.addEventListener('click', refreshAdsDataManually);
 }
-//Fin actualizcion manual
+
+if (campaignSelect) {
+  campaignSelect.addEventListener('change', applyCampaignFilter);
+}
+// Fin actualizacion manual

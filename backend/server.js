@@ -203,7 +203,8 @@ app.get('/api/meta/insights/:restaurant_id/:ad_account_id', async (req, res) => 
       {
         params: {
           access_token,
-          fields: 'campaign_name,impressions,reach,clicks,spend,ctr,cpc',
+          level: 'campaign',
+          fields: 'campaign_id,campaign_name,impressions,reach,clicks,spend,ctr,cpc',
           date_preset: 'last_30d'
         }
       }
@@ -212,12 +213,14 @@ app.get('/api/meta/insights/:restaurant_id/:ad_account_id', async (req, res) => 
     res.json(response.data);
   } catch (err) {
     console.error('Error insights:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Error al traer insights', detalle: err.message });
+    res.status(500).json({ error: 'Error al traer insights', detalle: err.response?.data || err.message });
   }
 });
 //  Fin Ruta métricas
+
 app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res) => {
   const { restaurant_id, ad_account_id } = req.params;
+  const { campaign_id } = req.query;
   const cleanAdAccountId = ad_account_id.replace('act_', '');
 
   try {
@@ -232,16 +235,27 @@ app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res)
 
     const { access_token } = result.rows[0];
 
+    const params = {
+      access_token,
+      level: 'campaign',
+      fields: 'campaign_id,campaign_name,impressions,reach,clicks,spend',
+      breakdowns: 'age,gender',
+      date_preset: 'last_30d'
+    };
+
+    if (campaign_id && campaign_id !== 'all') {
+      params.filtering = JSON.stringify([
+        {
+          field: 'campaign.id',
+          operator: 'IN',
+          value: [String(campaign_id)]
+        }
+      ]);
+    }
+
     const response = await axios.get(
       `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
-      {
-        params: {
-          access_token,
-          fields: 'impressions,reach,clicks,spend',
-          breakdowns: 'age,gender',
-          date_preset: 'last_30d'
-        }
-      }
+      { params }
     );
 
     res.json(response.data);
