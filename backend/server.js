@@ -37,9 +37,15 @@ app.get('/test-db', async (req, res) => {
 
 // PASO 1: Redirige al login de Facebook
 app.get('/api/meta/connect', (req, res) => {
+  const { restaurant_id } = req.query;
+
+  if (!restaurant_id) {
+    return res.status(400).json({ error: 'Falta restaurant_id' });
+  }
+
   const params = new URLSearchParams({
     client_id: process.env.META_APP_ID,
-    redirect_uri: process.env.META_REDIRECT_URI,
+    redirect_uri: `${process.env.META_REDIRECT_URI}?restaurant_id=${restaurant_id}`,
     scope: 'ads_read,ads_management',
     response_type: 'code',
   });
@@ -49,46 +55,64 @@ app.get('/api/meta/connect', (req, res) => {
 
 // PASO 2: Facebook nos devuelve el código → lo cambiamos por un token
 app.get('/api/meta/callback', async (req, res) => {
-  const { code, error } = req.query;
+  const { code, error, restaurant_id } = req.query;
 
   if (error) {
     return res.status(400).json({ error: 'El usuario rechazó el acceso a Meta.' });
   }
 
+  if (!restaurant_id) {
+    return res.status(400).json({ error: 'Falta restaurant_id en el callback.' });
+  }
+
   try {
-    // Intercambiar código por access token
     const tokenRes = await axios.get('https://graph.facebook.com/v20.0/oauth/access_token', {
       params: {
-        client_id:     process.env.META_APP_ID,
+        client_id: process.env.META_APP_ID,
         client_secret: process.env.META_APP_SECRET,
-        redirect_uri:  process.env.META_REDIRECT_URI,
+        redirect_uri: `${process.env.META_REDIRECT_URI}?restaurant_id=${restaurant_id}`,
         code,
       },
     });
 
     const accessToken = tokenRes.data.access_token;
 
-    // Obtener nombre e ID del usuario de Meta
     const userRes = await axios.get('https://graph.facebook.com/v20.0/me', {
-      params: { access_token: accessToken, fields: 'id,name' },
+      params: {
+        access_token: accessToken,
+        fields: 'id,name',
+      },
     });
 
     const { id: metaUserId, name: metaUserName } = userRes.data;
 
-    // Guardar token en la base de datos
     await pool.query(
-      `INSERT INTO meta_connections (meta_user_id, meta_user_name, access_token)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (meta_user_id)
-       DO UPDATE SET access_token = $3, updated_at = NOW()`,
-      [metaUserId, metaUserName, accessToken]
+      `INSERT INTO meta_connections (restaurant_id, meta_user_id, meta_user_name, access_token)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (restaurant_id)
+       DO UPDATE SET
+         meta_user_id = $2,
+         meta_user_name = $3,
+         access_token = $4,
+         updated_at = NOW()`,
+      [restaurant_id, metaUserId, metaUserName, accessToken]
     );
 
-    res.json({ mensaje: `✅ Conectado como: ${metaUserName}`, meta_user_id: metaUserId });
+    //res.json({
+    //  mensaje: `✅ Meta conectada correctamente para el restaurante ${restaurant_id}`,
+    //  restaurant_id,
+    //  meta_user_id: metaUserId,
+    //  meta_user_name: metaUserName
+    //});
+
+    return res.redirect('http://localhost:5500/frontend/dashboard.html?meta=connected');
 
   } catch (err) {
     console.error('Error Meta callback:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Error al conectar con Meta', detalle: err.message });
+    res.status(500).json({
+      error: 'Error al conectar con Meta',
+      detalle: err.response?.data || err.message
+    });
   }
 });
 

@@ -1,5 +1,15 @@
 const token = localStorage.getItem('token');
 
+const params = new URLSearchParams(window.location.search);
+const metaConnected = params.get('meta');
+
+if (metaConnected === 'connected') {
+  const metaStatus = document.getElementById('metaStatus');
+  if (metaStatus) {
+    metaStatus.textContent = 'Meta vinculada correctamente.';
+  }
+}
+
 if (!token) {
   window.location.href = './login.html';
 }
@@ -35,3 +45,25 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   localStorage.removeItem('restaurant');
   window.location.href = './login.html';
 });
+
+const btnVincularMeta = document.getElementById('btnVincularMeta');
+const metaStatus = document.getElementById('metaStatus');
+
+if (btnVincularMeta) {
+  btnVincularMeta.addEventListener('click', () => {
+    const restaurantId = localStorage.getItem('restaurant_id');
+
+    if (!restaurantId) {
+      if (metaStatus) {
+        metaStatus.textContent = 'No se encontró el restaurante logueado.';
+      }
+      return;
+    }
+
+    if (metaStatus) {
+      metaStatus.textContent = 'Redirigiendo a Meta...';
+    }
+
+    window.location.href = `http://localhost:3000/api/meta/connect?restaurant_id=${restaurantId}`;
+  });
+}

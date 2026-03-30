@@ -21,6 +21,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   if (res.ok && result.token) {
     localStorage.setItem('token', result.token);
     localStorage.setItem('restaurant', JSON.stringify(result.restaurant));
+    localStorage.setItem('restaurant_id', result.restaurant.id);
+    localStorage.setItem('restaurant_name', result.restaurant.name);
 
     setTimeout(() => {
       window.location.href = './dashboard.html';
