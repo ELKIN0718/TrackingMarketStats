@@ -4,22 +4,105 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/dashboard.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Dashboard del restaurante</h1>
+  <main class="dashboard-page">
+    <div class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Panel de control</p>
+          <h1>Dashboard del restaurante</h1>
+          <p id="welcome" class="welcome-text"></p>
+        </div>
 
-    <p id="welcome"></p>
+        <button id="logoutBtn" class="btn btn-ghost">Cerrar sesión</button>
+      </header>
 
-    <div class="meta-section">
-      <h2>Integración con Meta</h2>
-      <button id="btnVincularMeta" type="button">Vincular Meta</button>
-      <p id="metaStatus">Meta no vinculada.</p>
+      <section class="dashboard-grid">
+        <article class="card card-primary">
+          <div class="card-top">
+            <div>
+              <p class="card-label">Integración</p>
+              <h2>Meta Ads</h2>
+            </div>
+            <span class="status-badge">Conexión</span>
+          </div>
+
+          <p class="card-description">
+            Vincula tu cuenta de Meta para consultar campañas, métricas y rendimiento publicitario desde tu panel.
+          </p>
+
+          <div class="card-actions">
+            <button id="btnVincularMeta" type="button" class="btn btn-primary">
+              Vincular Meta
+            </button>
+          </div>
+
+          <p id="metaStatus" class="meta-status">Meta no vinculada.</p>
+        </article>
+
+        <article class="card card-secondary">
+          <p class="card-label">Estado</p>
+          <h2>Resumen rápido</h2>
+          <p class="card-description">
+            Desde aquí podrás centralizar la conexión de tu restaurante con Meta y revisar si la integración está activa.
+          </p>
+        </article>
+      </section>
+
+      <section class="ads-section">
+        <div class="section-header">
+          <h2>Publicidad</h2>
+          <p class="section-subtitle">Resumen de rendimiento de tus campañas</p>
+        </div>
+
+        <div class="kpi-grid">
+          <article class="kpi-card">
+            <p class="kpi-label">Gasto</p>
+            <h3 id="kpiSpend">$0</h3>
+          </article>
+
+          <article class="kpi-card">
+            <p class="kpi-label">Impresiones</p>
+            <h3 id="kpiImpressions">0</h3>
+          </article>
+
+          <article class="kpi-card">
+            <p class="kpi-label">Alcance</p>
+            <h3 id="kpiReach">0</h3>
+          </article>
+
+          <article class="kpi-card">
+            <p class="kpi-label">Clics</p>
+            <h3 id="kpiClicks">0</h3>
+          </article>
+        </div>
+
+        <div class="charts-grid">
+          <article class="chart-card">
+            <h3>Rendimiento por campaña</h3>
+            <canvas id="campaignChart"></canvas>
+          </article>
+
+          <article class="chart-card">
+            <h3>Distribución de gasto</h3>
+            <canvas id="spendChart"></canvas>
+          </article>
+
+          <article class="chart-card">
+            <div class="chart-header">
+              <h3>Distribución por edades</h3>
+              <button id="ageChartToggle" type="button" class="chart-toggle">Ver pastel</button>
+            </div>
+            <canvas id="ageChart"></canvas>
+          </article>
+        </div>
+      </section>
+
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </div>
-
-    <button id="logoutBtn">Cerrar sesión</button>
-  </div>
+  </main>
 
   <script src="./js/dashboard.js"></script>
 </body>

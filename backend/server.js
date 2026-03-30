@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios'); 
+const axios = require('axios');
+const cron = require('node-cron');
 const pool = require('./db'); // para base de datos
 require('dotenv').config();
 
@@ -117,17 +118,17 @@ app.get('/api/meta/callback', async (req, res) => {
 });
 
 // PASO 3: Obtener cuentas publicitarias de un usuario
-app.get('/api/meta/adaccounts/:meta_user_id', async (req, res) => {
-  const { meta_user_id } = req.params;
+app.get('/api/meta/adaccounts/:restaurant_id', async (req, res) => {
+  const { restaurant_id } = req.params;
 
   try {
     const result = await pool.query(
-      'SELECT access_token FROM meta_connections WHERE meta_user_id = $1',
-      [meta_user_id]
+      'SELECT access_token FROM meta_connections WHERE restaurant_id = $1',
+      [restaurant_id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no conectado a Meta' });
+      return res.status(404).json({ error: 'Restaurante no conectado a Meta' });
     }
 
     const { access_token } = result.rows[0];
@@ -150,17 +151,17 @@ app.get('/api/meta/adaccounts/:meta_user_id', async (req, res) => {
 // ── Fin Rutas de Meta ────────────────────────
 
 // ── Ruta temporal ────────────────────────
-app.get('/api/meta/me/:meta_user_id', async (req, res) => {
-  const { meta_user_id } = req.params;
+app.get('/api/meta/me/:restaurant_id', async (req, res) => {
+  const { restaurant_id } = req.params;
 
   try {
     const result = await pool.query(
-      'SELECT access_token FROM meta_connections WHERE meta_user_id = $1',
-      [meta_user_id]
+      'SELECT access_token FROM meta_connections WHERE restaurant_id = $1',
+      [restaurant_id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no conectado a Meta' });
+      return res.status(404).json({ error: 'Restaurante no conectado a Meta' });
     }
 
     const { access_token } = result.rows[0];
@@ -181,18 +182,18 @@ app.get('/api/meta/me/:meta_user_id', async (req, res) => {
 // ── Fin Ruta temporal ────────────────────────
 
 //  Ruta métricas
-app.get('/api/meta/insights/:meta_user_id/:ad_account_id', async (req, res) => {
-  const { meta_user_id, ad_account_id } = req.params;
+app.get('/api/meta/insights/:restaurant_id/:ad_account_id', async (req, res) => {
+  const { restaurant_id, ad_account_id } = req.params;
   const cleanAdAccountId = ad_account_id.replace('act_', '');
 
   try {
     const result = await pool.query(
-      'SELECT access_token FROM meta_connections WHERE meta_user_id = $1',
-      [meta_user_id]
+      'SELECT access_token FROM meta_connections WHERE restaurant_id = $1',
+      [restaurant_id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no conectado a Meta' });
+      return res.status(404).json({ error: 'Restaurante no conectado a Meta' });
     }
 
     const { access_token } = result.rows[0];
@@ -215,6 +216,46 @@ app.get('/api/meta/insights/:meta_user_id/:ad_account_id', async (req, res) => {
   }
 });
 //  Fin Ruta métricas
+app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res) => {
+  const { restaurant_id, ad_account_id } = req.params;
+  const cleanAdAccountId = ad_account_id.replace('act_', '');
+
+  try {
+    const result = await pool.query(
+      'SELECT access_token FROM meta_connections WHERE restaurant_id = $1',
+      [restaurant_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Restaurante no conectado a Meta' });
+    }
+
+    const { access_token } = result.rows[0];
+
+    const response = await axios.get(
+      `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
+      {
+        params: {
+          access_token,
+          fields: 'impressions,reach,clicks,spend',
+          breakdowns: 'age,gender',
+          date_preset: 'last_30d'
+        }
+      }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error insights age:', err.response?.data || err.message);
+    res.status(500).json({
+      error: 'Error al traer insights por edad',
+      detalle: err.response?.data || err.message
+    });
+  }
+});
+//Ruta Métricas Edad
+
+//FIN Ruta Métricas Edad
 
 //Verificar si exite meta
 app.get('/api/meta/status/:restaurant_id', async (req, res) => {
