@@ -216,6 +216,36 @@ app.get('/api/meta/insights/:meta_user_id/:ad_account_id', async (req, res) => {
 });
 //  Fin Ruta métricas
 
+//Verificar si exite meta
+app.get('/api/meta/status/:restaurant_id', async (req, res) => {
+  const { restaurant_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT id, meta_user_id, meta_user_name
+       FROM meta_connections
+       WHERE restaurant_id = $1`,
+      [restaurant_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({ connected: false });
+    }
+
+    return res.json({
+      connected: true,
+      connection: result.rows[0]
+    });
+  } catch (err) {
+    console.error('Error meta status:', err.message);
+    return res.status(500).json({
+      error: 'Error al consultar estado de Meta',
+      detalle: err.message
+    });
+  }
+});
+//Fin Verificar si exite meta
+
 //Server
 const PORT = process.env.PORT || 3000;
 
