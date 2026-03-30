@@ -62,7 +62,7 @@
             Actualizar datos
           </button>
         </div>
-        
+
         <div class="campaign-filter-card">
           <label for="campaignSelect" class="campaign-filter-label">Selecciona una campaña</label>
           <select id="campaignSelect" class="campaign-select">
@@ -109,6 +109,19 @@
               <button id="ageChartToggle" type="button" class="chart-toggle">Ver pastel</button>
             </div>
             <canvas id="ageChart"></canvas>
+          </article>
+
+          <article class="chart-card">
+            <h3>Alcance por país</h3>
+            <canvas id="countryChart"></canvas>
+          </article>
+
+          <article class="chart-card">
+            <div class="chart-header">
+              <h3 id="regionChartTitle">Alcance por región</h3>
+              <select id="regionCountrySelect" class="chart-filter-select"></select>
+            </div>
+            <canvas id="regionChart"></canvas>
           </article>
         </div>
       </section>

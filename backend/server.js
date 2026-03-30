@@ -218,6 +218,7 @@ app.get('/api/meta/insights/:restaurant_id/:ad_account_id', async (req, res) => 
 });
 //  Fin Ruta métricas
 
+//Ruta Métricas Edad
 app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res) => {
   const { restaurant_id, ad_account_id } = req.params;
   const { campaign_id } = req.query;
@@ -267,9 +268,123 @@ app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res)
     });
   }
 });
-//Ruta Métricas Edad
-
 //FIN Ruta Métricas Edad
+
+//Ruta Métricas demografía por país
+app.get('/api/meta/demographics-country/:restaurant_id/:ad_account_id', async (req, res) => {
+  const { restaurant_id, ad_account_id } = req.params;
+  const { campaign_id } = req.query;
+  const cleanAdAccountId = ad_account_id.replace('act_', '');
+
+  try {
+    const result = await pool.query(
+      'SELECT access_token FROM meta_connections WHERE restaurant_id = $1',
+      [restaurant_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Restaurante no conectado a Meta' });
+    }
+
+    const { access_token } = result.rows[0];
+
+    const params = {
+      access_token,
+      level: 'campaign',
+      fields: 'campaign_id,campaign_name,impressions,reach,clicks,spend',
+      breakdowns: 'country',
+      date_preset: 'last_30d'
+    };
+
+    if (campaign_id && campaign_id !== 'all') {
+      params.filtering = JSON.stringify([
+        {
+          field: 'campaign.id',
+          operator: 'IN',
+          value: [String(campaign_id)]
+        }
+      ]);
+    }
+
+    const response = await axios.get(
+      `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
+      { params }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error demographics country:', err.response?.data || err.message);
+    res.status(500).json({
+      error: 'Error al traer demografía por país',
+      detalle: err.response?.data || err.message
+    });
+  }
+});
+//Fin Ruta Métricas demografía por país
+
+//Ruta Métricas demografía por region
+app.get('/api/meta/demographics-region/:restaurant_id/:ad_account_id', async (req, res) => {
+  const { restaurant_id, ad_account_id } = req.params;
+  const { campaign_id, country } = req.query;
+  const cleanAdAccountId = ad_account_id.replace('act_', '');
+
+  try {
+    const result = await pool.query(
+      'SELECT access_token FROM meta_connections WHERE restaurant_id = $1',
+      [restaurant_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Restaurante no conectado a Meta' });
+    }
+
+    const { access_token } = result.rows[0];
+
+    const filters = [];
+
+    if (campaign_id && campaign_id !== 'all') {
+      filters.push({
+        field: 'campaign.id',
+        operator: 'IN',
+        value: [String(campaign_id)]
+      });
+    }
+
+    if (country) {
+      filters.push({
+        field: 'country',
+        operator: 'IN',
+        value: [String(country)]
+      });
+    }
+
+    const params = {
+      access_token,
+      level: 'campaign',
+      fields: 'campaign_id,campaign_name,impressions,reach,clicks,spend',
+      breakdowns: 'region',
+      date_preset: 'last_30d'
+    };
+
+    if (filters.length > 0) {
+      params.filtering = JSON.stringify(filters);
+    }
+
+    const response = await axios.get(
+      `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
+      { params }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error demographics region:', err.response?.data || err.message);
+    res.status(500).json({
+      error: 'Error al traer demografía por región',
+      detalle: err.response?.data || err.message
+    });
+  }
+});
+//Fin Ruta Métricas demografía por region
 
 //Verificar si exite meta
 app.get('/api/meta/status/:restaurant_id', async (req, res) => {

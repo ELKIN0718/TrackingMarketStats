@@ -288,6 +288,7 @@ body {
 
 .chart-card canvas {
   width: 100% !important;
+  min-height: 260px;
   max-height: 320px;
 }
 
@@ -344,6 +345,16 @@ body {
 .campaign-select:focus {
   border-color: #1877f2;
   box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.15);
+}
+
+.chart-filter-select {
+  min-width: 140px;
+  padding: 8px 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  color: #101828;
 }
 
 @media (max-width: 900px) {

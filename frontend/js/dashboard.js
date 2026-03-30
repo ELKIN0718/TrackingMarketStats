@@ -17,6 +17,11 @@ const kpiReach = document.getElementById('kpiReach');
 const kpiClicks = document.getElementById('kpiClicks');
 const refreshAdsBtn = document.getElementById('refreshAdsBtn');
 const campaignSelect = document.getElementById('campaignSelect');
+
+const regionCountrySelect = document.getElementById('regionCountrySelect');
+
+let availableCountries = [];
+let selectedRegionCountry = null;
 // fin graficas
 
 let campaignChartInstance = null;
@@ -33,6 +38,8 @@ const ageChartToggle = document.getElementById('ageChartToggle');
 let allCampaignRows = [];
 let currentRestaurantId = null;
 let currentAdAccountId = null;
+let countryChartInstance = null;
+let regionChartInstance = null;
 
 function setMetaStatus(type, message) {
   if (!metaStatus) return;
@@ -233,6 +240,209 @@ function renderAgeChart(labels, maleData, femaleData) {
 }
 // Fin Graficas Edad
 
+// Graficas demografía por país
+function renderCountryChart(labels, data) {
+  const canvas = document.getElementById('countryChart');
+  if (!canvas) return;
+
+  if (countryChartInstance) {
+    countryChartInstance.destroy();
+  }
+
+  countryChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Alcance',
+        data,
+        backgroundColor: '#12b76a',
+        borderRadius: 8,
+        barPercentage: 0.6,
+        categoryPercentage: 0.7
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true
+        },
+        y: {
+          ticks: {
+            autoSkip: false
+          }
+        }
+      }
+    }
+  });
+}
+
+async function loadCountryDemographics(restaurantId, adAccountId, campaignId = 'all') {
+  try {
+    let url = `http://localhost:3000/api/meta/demographics-country/${restaurantId}/${adAccountId}`;
+
+    if (campaignId && campaignId !== 'all') {
+      url += `?campaign_id=${encodeURIComponent(campaignId)}`;
+    }
+
+    const res = await fetch(url);
+    const result = await res.json();
+
+    if (!res.ok || !result.data || result.data.length === 0) {
+      availableCountries = [];
+      selectedRegionCountry = null;
+      populateRegionCountrySelect([]);
+      renderCountryChart([], []);
+      renderRegionChart([], []);
+      return;
+    }
+
+    const sortedRows = [...result.data]
+      .sort((a, b) => Number(b.reach || 0) - Number(a.reach || 0));
+
+    const labels = sortedRows.map(row => row.country || 'Sin país');
+    const data = sortedRows.map(row => Number(row.reach || 0));
+
+    renderCountryChart(labels, data);
+
+    availableCountries = [...new Set(sortedRows.map(row => row.country).filter(Boolean))];
+
+    if (!availableCountries.includes(selectedRegionCountry)) {
+      selectedRegionCountry = availableCountries[0] || null;
+    }
+
+    populateRegionCountrySelect(availableCountries);
+
+    if (selectedRegionCountry) {
+      await loadRegionDemographics(restaurantId, adAccountId, campaignId, selectedRegionCountry);
+    } else {
+      renderRegionChart([], []);
+    }
+  } catch (error) {
+    console.error('Error cargando demografía por país:', error);
+  }
+}
+// Fin Graficas demografía por país
+
+// Graficas demografía por region
+function renderRegionChart(labels, data) {
+  const canvas = document.getElementById('regionChart');
+  if (!canvas) return;
+
+  if (regionChartInstance) {
+    regionChartInstance.destroy();
+  }
+
+  regionChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Alcance',
+        data,
+        backgroundColor: '#7a5af8',
+        borderRadius: 8,
+        barPercentage: 0.6,
+        categoryPercentage: 0.7
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true
+        },
+        y: {
+          ticks: {
+            autoSkip: false
+          }
+        }
+      }
+    }
+  });
+}
+
+async function loadRegionDemographics(restaurantId, adAccountId, campaignId = 'all', country = null) {
+  try {
+    const params = new URLSearchParams();
+
+    if (campaignId && campaignId !== 'all') {
+      params.append('campaign_id', campaignId);
+    }
+
+    if (country) {
+      params.append('country', country);
+    }
+
+    let url = `http://localhost:3000/api/meta/demographics-region/${restaurantId}/${adAccountId}`;
+    const queryString = params.toString();
+
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+
+    const res = await fetch(url);
+    const result = await res.json();
+
+    if (!res.ok || !result.data || result.data.length === 0) {
+      renderRegionChart([], []);
+      return;
+    }
+
+    const sortedRows = [...result.data]
+      .sort((a, b) => Number(b.reach || 0) - Number(a.reach || 0))
+      .slice(0, 10);
+
+    const labels = sortedRows.map(row => row.region || 'Sin región');
+    const data = sortedRows.map(row => Number(row.reach || 0));
+
+    renderRegionChart(labels, data);
+  } catch (error) {
+    console.error('Error cargando demografía por región:', error);
+  }
+}
+
+function populateRegionCountrySelect(countries) {
+  if (!regionCountrySelect) return;
+
+  regionCountrySelect.innerHTML = '';
+
+  if (!countries || countries.length === 0) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Sin países';
+    regionCountrySelect.appendChild(option);
+    regionCountrySelect.disabled = true;
+    return;
+  }
+
+  regionCountrySelect.disabled = false;
+
+  countries.forEach(country => {
+    const option = document.createElement('option');
+    option.value = country;
+    option.textContent = country;
+    if (country === selectedRegionCountry) {
+      option.selected = true;
+    }
+    regionCountrySelect.appendChild(option);
+  });
+}
+// Fin Graficas demografía por region
+
 function populateCampaignSelect(rows) {
   if (!campaignSelect) return;
 
@@ -291,6 +501,8 @@ async function applyCampaignFilter() {
 
     if (currentRestaurantId && currentAdAccountId) {
       await loadAgeInsights(currentRestaurantId, currentAdAccountId, 'all');
+      await loadCountryDemographics(currentRestaurantId, currentAdAccountId, 'all');
+      //await loadRegionDemographics(currentRestaurantId, currentAdAccountId, 'all');
     }
 
     return;
@@ -304,6 +516,8 @@ async function applyCampaignFilter() {
 
   if (currentRestaurantId && currentAdAccountId) {
     await loadAgeInsights(currentRestaurantId, currentAdAccountId, selectedCampaignId);
+    await loadCountryDemographics(currentRestaurantId, currentAdAccountId, selectedCampaignId);
+    //await loadRegionDemographics(currentRestaurantId, currentAdAccountId, selectedCampaignId);
   }
 }
 
@@ -334,6 +548,8 @@ async function loadAdsDashboard(restaurantId) {
     updateDashboardWithCampaignRows(rows);
 
     await loadAgeInsights(restaurantId, firstAccountId, 'all');
+    await loadCountryDemographics(restaurantId, firstAccountId, 'all');
+    await loadRegionDemographics(restaurantId, firstAccountId, 'all');
   } catch (error) {
     console.error('Error cargando dashboard de publicidad:', error);
   }
@@ -536,3 +752,28 @@ if (campaignSelect) {
   campaignSelect.addEventListener('change', applyCampaignFilter);
 }
 // Fin actualizacion manual
+
+if (regionCountrySelect) {
+  regionCountrySelect.addEventListener('change', async (event) => {
+    selectedRegionCountry = event.target.value;
+
+    if (currentRestaurantId && currentAdAccountId && selectedRegionCountry) {
+      const selectedCampaignId = campaignSelect ? campaignSelect.value : 'all';
+      await loadRegionDemographics(
+        currentRestaurantId,
+        currentAdAccountId,
+        selectedCampaignId,
+        selectedRegionCountry
+      );
+    }
+  });
+}
+
+const regionChartTitle = document.getElementById('regionChartTitle');
+
+function updateRegionTitle(country) {
+  if (!regionChartTitle) return;
+  regionChartTitle.textContent = country
+    ? `Alcance por región (${country})`
+    : 'Alcance por región';
+}
