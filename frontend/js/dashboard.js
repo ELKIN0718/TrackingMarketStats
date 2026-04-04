@@ -300,6 +300,7 @@ async function loadCountryDemographics(restaurantId, adAccountId, campaignId = '
       availableCountries = [];
       selectedRegionCountry = null;
       populateRegionCountrySelect([]);
+      updateRegionTitle(null);
       renderCountryChart([], []);
       renderRegionChart([], []);
       return;
@@ -320,6 +321,7 @@ async function loadCountryDemographics(restaurantId, adAccountId, campaignId = '
     }
 
     populateRegionCountrySelect(availableCountries);
+    updateRegionTitle(selectedRegionCountry);
 
     if (selectedRegionCountry) {
       await loadRegionDemographics(restaurantId, adAccountId, campaignId, selectedRegionCountry);
@@ -642,7 +644,7 @@ async function loadAdsDashboard(restaurantId) {
 
     await loadAgeInsights(restaurantId, firstAccountId, 'all');
     await loadCountryDemographics(restaurantId, firstAccountId, 'all');
-    await loadRegionDemographics(restaurantId, firstAccountId, 'all');
+    //await loadRegionDemographics(restaurantId, firstAccountId, 'all');
     await loadPlatformDemographics(restaurantId, firstAccountId, 'all');
   } catch (error) {
     console.error('Error cargando dashboard de publicidad:', error);
@@ -850,6 +852,7 @@ if (campaignSelect) {
 if (regionCountrySelect) {
   regionCountrySelect.addEventListener('change', async (event) => {
     selectedRegionCountry = event.target.value;
+    updateRegionTitle(selectedRegionCountry);
 
     if (currentRestaurantId && currentAdAccountId && selectedRegionCountry) {
       const selectedCampaignId = campaignSelect ? campaignSelect.value : 'all';
