@@ -22,6 +22,7 @@ const regionCountrySelect = document.getElementById('regionCountrySelect');
 
 let availableCountries = [];
 let selectedRegionCountry = null;
+let platformChartInstance = null;
 // fin graficas
 
 let campaignChartInstance = null;
@@ -443,6 +444,96 @@ function populateRegionCountrySelect(countries) {
 }
 // Fin Graficas demografía por region
 
+// Graficas demografía por plataforma
+function renderPlatformChart(labels, data) {
+  const canvas = document.getElementById('platformChart');
+  if (!canvas) return;
+
+  if (platformChartInstance) {
+    platformChartInstance.destroy();
+  }
+
+  platformChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Alcance',
+        data,
+        backgroundColor: ['#1877f2', '#E1306C', '#12b76a', '#7a5af8'],
+        borderRadius: 8,
+        barPercentage: 0.6,
+        categoryPercentage: 0.7
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true
+        },
+        y: {
+          ticks: {
+            autoSkip: false
+          }
+        }
+      }
+    }
+  });
+}
+
+async function loadPlatformDemographics(restaurantId, adAccountId, campaignId = 'all') {
+  try {
+    let url = `http://localhost:3000/api/meta/demographics-platform/${restaurantId}/${adAccountId}`;
+
+    if (campaignId && campaignId !== 'all') {
+      url += `?campaign_id=${encodeURIComponent(campaignId)}`;
+    }
+
+    const res = await fetch(url);
+    const result = await res.json();
+
+    if (!res.ok || !result.data || result.data.length === 0) {
+      renderPlatformChart([], []);
+      return;
+    }
+
+    const grouped = {};
+
+    result.data.forEach(row => {
+      const rawPlatform = row.publisher_platform || 'unknown';
+      const platform = rawPlatform
+        .replaceAll('_', ' ')
+        .replace(/\b\w/g, char => char.toUpperCase());
+
+      const reach = Number(row.reach || 0);
+
+      if (!grouped[platform]) {
+        grouped[platform] = 0;
+      }
+
+      grouped[platform] += reach;
+    });
+
+    const sortedEntries = Object.entries(grouped)
+      .sort((a, b) => b[1] - a[1]);
+
+    const labels = sortedEntries.map(([label]) => label);
+    const data = sortedEntries.map(([, value]) => value);
+
+    renderPlatformChart(labels, data);
+  } catch (error) {
+    console.error('Error cargando demografía por plataforma:', error);
+  }
+}
+// Fin Graficas demografía por plataforma
+
 function populateCampaignSelect(rows) {
   if (!campaignSelect) return;
 
@@ -502,6 +593,7 @@ async function applyCampaignFilter() {
     if (currentRestaurantId && currentAdAccountId) {
       await loadAgeInsights(currentRestaurantId, currentAdAccountId, 'all');
       await loadCountryDemographics(currentRestaurantId, currentAdAccountId, 'all');
+      await loadPlatformDemographics(currentRestaurantId, currentAdAccountId, 'all');
       //await loadRegionDemographics(currentRestaurantId, currentAdAccountId, 'all');
     }
 
@@ -517,6 +609,7 @@ async function applyCampaignFilter() {
   if (currentRestaurantId && currentAdAccountId) {
     await loadAgeInsights(currentRestaurantId, currentAdAccountId, selectedCampaignId);
     await loadCountryDemographics(currentRestaurantId, currentAdAccountId, selectedCampaignId);
+    await loadPlatformDemographics(currentRestaurantId, currentAdAccountId, selectedCampaignId);
     //await loadRegionDemographics(currentRestaurantId, currentAdAccountId, selectedCampaignId);
   }
 }
@@ -550,6 +643,7 @@ async function loadAdsDashboard(restaurantId) {
     await loadAgeInsights(restaurantId, firstAccountId, 'all');
     await loadCountryDemographics(restaurantId, firstAccountId, 'all');
     await loadRegionDemographics(restaurantId, firstAccountId, 'all');
+    await loadPlatformDemographics(restaurantId, firstAccountId, 'all');
   } catch (error) {
     console.error('Error cargando dashboard de publicidad:', error);
   }

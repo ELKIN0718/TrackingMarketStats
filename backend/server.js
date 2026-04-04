@@ -390,6 +390,58 @@ app.get('/api/meta/demographics-region/:restaurant_id/:ad_account_id', async (re
 });
 // Fin Ruta Métricas demografía por region
 
+// Ruta Métricas demografía por plataforma
+app.get('/api/meta/demographics-platform/:restaurant_id/:ad_account_id', async (req, res) => {
+  const { restaurant_id, ad_account_id } = req.params;
+  const { campaign_id } = req.query;
+  const cleanAdAccountId = ad_account_id.replace('act_', '');
+
+  try {
+    const result = await pool.query(
+      'SELECT access_token FROM meta_connections WHERE restaurant_id = $1',
+      [restaurant_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Restaurante no conectado a Meta' });
+    }
+
+    const { access_token } = result.rows[0];
+
+    const params = {
+      access_token,
+      level: 'campaign',
+      fields: 'campaign_id,campaign_name,impressions,reach,clicks,spend',
+      breakdowns: 'publisher_platform',
+      date_preset: 'last_30d'
+    };
+
+    if (campaign_id && campaign_id !== 'all') {
+      params.filtering = JSON.stringify([
+        {
+          field: 'campaign.id',
+          operator: 'IN',
+          value: [String(campaign_id)]
+        }
+      ]);
+    }
+
+    const url = new URL(`https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`);
+    url.search = new URLSearchParams(params).toString();
+
+    const response = await fetchJson(url.toString());
+
+    res.json(response);
+  } catch (err) {
+    console.error('Error demographics platform:', err.response?.data || err.message);
+    res.status(500).json({
+      error: 'Error al traer demografía por plataforma',
+      detalle: err.response?.data || err.message
+    });
+  }
+});
+// Fin Ruta Métricas demografía por plataforma
+
 // Verificar si exite meta
 app.get('/api/meta/status/:restaurant_id', async (req, res) => {
   const { restaurant_id } = req.params;
