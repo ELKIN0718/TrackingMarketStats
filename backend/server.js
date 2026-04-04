@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
 const cron = require('node-cron');
 const pool = require('./db'); // para base de datos
 require('dotenv').config();
@@ -33,6 +32,20 @@ app.get('/test-db', async (req, res) => {
     });
   }
 });
+
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, options);
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(data?.error?.message || data?.message || 'Error en petición HTTP');
+    error.response = { data };
+    throw error;
+  }
+
+  return data;
+}
 
 // ── Rutas de Meta ────────────────────────
 
@@ -67,25 +80,25 @@ app.get('/api/meta/callback', async (req, res) => {
   }
 
   try {
-    const tokenRes = await axios.get('https://graph.facebook.com/v20.0/oauth/access_token', {
-      params: {
-        client_id: process.env.META_APP_ID,
-        client_secret: process.env.META_APP_SECRET,
-        redirect_uri: `${process.env.META_REDIRECT_URI}?restaurant_id=${restaurant_id}`,
-        code,
-      },
-    });
+    const tokenUrl = new URL('https://graph.facebook.com/v20.0/oauth/access_token');
+    tokenUrl.search = new URLSearchParams({
+      client_id: process.env.META_APP_ID,
+      client_secret: process.env.META_APP_SECRET,
+      redirect_uri: `${process.env.META_REDIRECT_URI}?restaurant_id=${restaurant_id}`,
+      code,
+    }).toString();
 
-    const accessToken = tokenRes.data.access_token;
+    const tokenRes = await fetchJson(tokenUrl.toString());
+    const accessToken = tokenRes.access_token;
 
-    const userRes = await axios.get('https://graph.facebook.com/v20.0/me', {
-      params: {
-        access_token: accessToken,
-        fields: 'id,name',
-      },
-    });
+    const userUrl = new URL('https://graph.facebook.com/v20.0/me');
+    userUrl.search = new URLSearchParams({
+      access_token: accessToken,
+      fields: 'id,name',
+    }).toString();
 
-    const { id: metaUserId, name: metaUserName } = userRes.data;
+    const userRes = await fetchJson(userUrl.toString());
+    const { id: metaUserId, name: metaUserName } = userRes;
 
     await pool.query(
       `INSERT INTO meta_connections (restaurant_id, meta_user_id, meta_user_name, access_token)
@@ -99,15 +112,7 @@ app.get('/api/meta/callback', async (req, res) => {
       [restaurant_id, metaUserId, metaUserName, accessToken]
     );
 
-    //res.json({
-    //  mensaje: `✅ Meta conectada correctamente para el restaurante ${restaurant_id}`,
-    //  restaurant_id,
-    //  meta_user_id: metaUserId,
-    //  meta_user_name: metaUserName
-    //});
-
     return res.redirect('http://localhost:5500/frontend/dashboard.html?meta=connected');
-
   } catch (err) {
     console.error('Error Meta callback:', err.response?.data || err.message);
     res.status(500).json({
@@ -133,15 +138,15 @@ app.get('/api/meta/adaccounts/:restaurant_id', async (req, res) => {
 
     const { access_token } = result.rows[0];
 
-    const response = await axios.get('https://graph.facebook.com/v20.0/me/adaccounts', {
-      params: {
-        access_token,
-        fields: 'id,name,account_status,currency',
-      },
-    });
+    const url = new URL('https://graph.facebook.com/v20.0/me/adaccounts');
+    url.search = new URLSearchParams({
+      access_token,
+      fields: 'id,name,account_status,currency',
+    }).toString();
 
-    res.json(response.data);
+    const response = await fetchJson(url.toString());
 
+    res.json(response);
   } catch (err) {
     console.error('Error adaccounts:', err.response?.data || err.message);
     res.status(500).json({ error: 'Error al consultar Meta', detalle: err.message });
@@ -166,14 +171,15 @@ app.get('/api/meta/me/:restaurant_id', async (req, res) => {
 
     const { access_token } = result.rows[0];
 
-    const response = await axios.get('https://graph.facebook.com/v20.0/me', {
-      params: {
-        access_token,
-        fields: 'id,name',
-      },
-    });
+    const url = new URL('https://graph.facebook.com/v20.0/me');
+    url.search = new URLSearchParams({
+      access_token,
+      fields: 'id,name',
+    }).toString();
 
-    res.json(response.data);
+    const response = await fetchJson(url.toString());
+
+    res.json(response);
   } catch (err) {
     console.error(err.response?.data || err.message);
     res.status(500).json({ error: 'Error al consultar /me', detalle: err.message });
@@ -181,7 +187,7 @@ app.get('/api/meta/me/:restaurant_id', async (req, res) => {
 });
 // ── Fin Ruta temporal ────────────────────────
 
-//  Ruta métricas
+// Ruta métricas
 app.get('/api/meta/insights/:restaurant_id/:ad_account_id', async (req, res) => {
   const { restaurant_id, ad_account_id } = req.params;
   const cleanAdAccountId = ad_account_id.replace('act_', '');
@@ -198,27 +204,25 @@ app.get('/api/meta/insights/:restaurant_id/:ad_account_id', async (req, res) => 
 
     const { access_token } = result.rows[0];
 
-    const response = await axios.get(
-      `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
-      {
-        params: {
-          access_token,
-          level: 'campaign',
-          fields: 'campaign_id,campaign_name,impressions,reach,clicks,spend,ctr,cpc',
-          date_preset: 'last_30d'
-        }
-      }
-    );
+    const url = new URL(`https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`);
+    url.search = new URLSearchParams({
+      access_token,
+      level: 'campaign',
+      fields: 'campaign_id,campaign_name,impressions,reach,clicks,spend,ctr,cpc',
+      date_preset: 'last_30d'
+    }).toString();
 
-    res.json(response.data);
+    const response = await fetchJson(url.toString());
+
+    res.json(response);
   } catch (err) {
     console.error('Error insights:', err.response?.data || err.message);
     res.status(500).json({ error: 'Error al traer insights', detalle: err.response?.data || err.message });
   }
 });
-//  Fin Ruta métricas
+// Fin Ruta métricas
 
-//Ruta Métricas Edad
+// Ruta Métricas Edad
 app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res) => {
   const { restaurant_id, ad_account_id } = req.params;
   const { campaign_id } = req.query;
@@ -254,12 +258,12 @@ app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res)
       ]);
     }
 
-    const response = await axios.get(
-      `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
-      { params }
-    );
+    const url = new URL(`https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`);
+    url.search = new URLSearchParams(params).toString();
 
-    res.json(response.data);
+    const response = await fetchJson(url.toString());
+
+    res.json(response);
   } catch (err) {
     console.error('Error insights age:', err.response?.data || err.message);
     res.status(500).json({
@@ -268,9 +272,9 @@ app.get('/api/meta/insights-age/:restaurant_id/:ad_account_id', async (req, res)
     });
   }
 });
-//FIN Ruta Métricas Edad
+// FIN Ruta Métricas Edad
 
-//Ruta Métricas demografía por país
+// Ruta Métricas demografía por país
 app.get('/api/meta/demographics-country/:restaurant_id/:ad_account_id', async (req, res) => {
   const { restaurant_id, ad_account_id } = req.params;
   const { campaign_id } = req.query;
@@ -306,12 +310,12 @@ app.get('/api/meta/demographics-country/:restaurant_id/:ad_account_id', async (r
       ]);
     }
 
-    const response = await axios.get(
-      `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
-      { params }
-    );
+    const url = new URL(`https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`);
+    url.search = new URLSearchParams(params).toString();
 
-    res.json(response.data);
+    const response = await fetchJson(url.toString());
+
+    res.json(response);
   } catch (err) {
     console.error('Error demographics country:', err.response?.data || err.message);
     res.status(500).json({
@@ -320,9 +324,9 @@ app.get('/api/meta/demographics-country/:restaurant_id/:ad_account_id', async (r
     });
   }
 });
-//Fin Ruta Métricas demografía por país
+// Fin Ruta Métricas demografía por país
 
-//Ruta Métricas demografía por region
+// Ruta Métricas demografía por region
 app.get('/api/meta/demographics-region/:restaurant_id/:ad_account_id', async (req, res) => {
   const { restaurant_id, ad_account_id } = req.params;
   const { campaign_id, country } = req.query;
@@ -370,12 +374,12 @@ app.get('/api/meta/demographics-region/:restaurant_id/:ad_account_id', async (re
       params.filtering = JSON.stringify(filters);
     }
 
-    const response = await axios.get(
-      `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
-      { params }
-    );
+    const url = new URL(`https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`);
+    url.search = new URLSearchParams(params).toString();
 
-    res.json(response.data);
+    const response = await fetchJson(url.toString());
+
+    res.json(response);
   } catch (err) {
     console.error('Error demographics region:', err.response?.data || err.message);
     res.status(500).json({
@@ -384,9 +388,9 @@ app.get('/api/meta/demographics-region/:restaurant_id/:ad_account_id', async (re
     });
   }
 });
-//Fin Ruta Métricas demografía por region
+// Fin Ruta Métricas demografía por region
 
-//Verificar si exite meta
+// Verificar si exite meta
 app.get('/api/meta/status/:restaurant_id', async (req, res) => {
   const { restaurant_id } = req.params;
 
@@ -414,9 +418,9 @@ app.get('/api/meta/status/:restaurant_id', async (req, res) => {
     });
   }
 });
-//Fin Verificar si exite meta
+// Fin Verificar si exite meta
 
-//Actualizacion automatica
+// Actualizacion automatica
 async function syncMetaInsightsForAllRestaurants() {
   try {
     const result = await pool.query(`
@@ -428,44 +432,40 @@ async function syncMetaInsightsForAllRestaurants() {
       const { restaurant_id, access_token } = row;
 
       try {
-        const adAccountsRes = await axios.get('https://graph.facebook.com/v20.0/me/adaccounts', {
-          params: {
-            access_token,
-            fields: 'id,name,account_status,currency',
-          },
-        });
+        const adAccountsUrl = new URL('https://graph.facebook.com/v20.0/me/adaccounts');
+        adAccountsUrl.search = new URLSearchParams({
+          access_token,
+          fields: 'id,name,account_status,currency',
+        }).toString();
 
-        const adAccounts = adAccountsRes.data.data || [];
+        const adAccountsRes = await fetchJson(adAccountsUrl.toString());
+        const adAccounts = adAccountsRes.data || [];
         if (!adAccounts.length) continue;
 
         for (const account of adAccounts) {
           const cleanAdAccountId = account.id.replace('act_', '');
 
-          const insightsRes = await axios.get(
-            `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
-            {
-              params: {
-                access_token,
-                fields: 'campaign_name,impressions,reach,clicks,spend,ctr,cpc',
-                date_preset: 'last_30d'
-              }
-            }
-          );
+          const insightsUrl = new URL(`https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`);
+          insightsUrl.search = new URLSearchParams({
+            access_token,
+            fields: 'campaign_name,impressions,reach,clicks,spend,ctr,cpc',
+            date_preset: 'last_30d'
+          }).toString();
 
-          const ageInsightsRes = await axios.get(
-            `https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`,
-            {
-              params: {
-                access_token,
-                fields: 'impressions,reach,clicks,spend',
-                breakdowns: 'age,gender',
-                date_preset: 'last_30d'
-              }
-            }
-          );
+          const insightsRes = await fetchJson(insightsUrl.toString());
+
+          const ageInsightsUrl = new URL(`https://graph.facebook.com/v20.0/act_${cleanAdAccountId}/insights`);
+          ageInsightsUrl.search = new URLSearchParams({
+            access_token,
+            fields: 'impressions,reach,clicks,spend',
+            breakdowns: 'age,gender',
+            date_preset: 'last_30d'
+          }).toString();
+
+          const ageInsightsRes = await fetchJson(ageInsightsUrl.toString());
 
           console.log(
-            `Meta sync OK | restaurant_id=${restaurant_id} | account=${account.id} | campaigns=${(insightsRes.data.data || []).length} | ages=${(ageInsightsRes.data.data || []).length}`
+            `Meta sync OK | restaurant_id=${restaurant_id} | account=${account.id} | campaigns=${(insightsRes.data || []).length} | ages=${(ageInsightsRes.data || []).length}`
           );
 
           // Aquí después puedes guardar en BD si quieres cachear resultados.
@@ -483,10 +483,11 @@ cron.schedule('0 6,14,22 * * *', async () => {
   console.log('Ejecutando sincronización automática de Meta...');
   await syncMetaInsightsForAllRestaurants();
 });
-syncMetaInsightsForAllRestaurants();
-//Fin Actualizacion Automatica
 
-//Server
+syncMetaInsightsForAllRestaurants();
+// Fin Actualizacion Automatica
+
+// Server
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
