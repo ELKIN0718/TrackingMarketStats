@@ -9,10 +9,10 @@ if (!token) {
 
 const btnVincularMeta = document.getElementById('btnVincularMeta');
 const metaStatus = document.getElementById('metaStatus');
-const metaIntegrationPanel = document.getElementById('metaIntegrationPanel');
 const metaIndicatorDot = document.getElementById('metaIndicatorDot');
 const metaIndicatorBadge = document.getElementById('metaIndicatorBadge');
 const metaIndicatorTitle = document.getElementById('metaIndicatorTitle');
+const sidebarRestaurantName = document.getElementById('sidebarRestaurantName');
 
 const kpiSpend = document.getElementById('kpiSpend');
 const kpiImpressions = document.getElementById('kpiImpressions');
@@ -95,10 +95,6 @@ function setMetaPanelState({ connected, title, badgeText, tone }) {
   if (metaIndicatorDot) {
     metaIndicatorDot.classList.remove('is-success', 'is-warning', 'is-error');
     metaIndicatorDot.classList.add(tone);
-  }
-
-  if (metaIntegrationPanel) {
-    metaIntegrationPanel.open = !connected;
   }
 }
 
@@ -1253,6 +1249,10 @@ async function loadProfile() {
 
     document.getElementById('welcome').textContent = `Bienvenido, ${result.restaurant.name}`;
 
+    if (sidebarRestaurantName) {
+      sidebarRestaurantName.textContent = result.restaurant.name || 'Restaurante';
+    }
+
     const restaurantId = result.restaurant.id;
     localStorage.setItem('restaurant_id', restaurantId);
 
@@ -1428,14 +1428,6 @@ if (regionCountrySelect) {
         selectedCampaignId,
         selectedRegionCountry
       );
-    }
-  });
-}
-
-if (metaIntegrationPanel) {
-  metaIntegrationPanel.addEventListener('toggle', () => {
-    if (!metaIsConnected && !metaIntegrationPanel.open) {
-      metaIntegrationPanel.open = true;
     }
   });
 }

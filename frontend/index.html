@@ -1,1 +1,713 @@
-hola
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarketStats | Analítica publicitaria para restaurantes</title>
+  <meta
+    name="description"
+    content="Conecta Meta Ads y analiza campañas, audiencias, ubicaciones y rendimiento publicitario desde un dashboard claro para restaurantes."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="./css/landing.css" />
+</head>
+<body>
+  <div class="landing-shell" id="top">
+    <header class="site-header">
+      <div class="container header-content">
+        <a href="./index.html" class="brand">
+          <span class="brand-mark">MS</span>
+          <span class="brand-text">
+            <strong>MarketStats</strong>
+            <small>Meta Ads para restaurantes</small>
+          </span>
+        </a>
+
+        <nav class="site-nav">
+          <a href="#beneficios">Beneficios</a>
+          <a href="#funciona">Cómo funciona</a>
+          <a href="#panel">Panel</a>
+          <a href="#faq">Preguntas</a>
+        </nav>
+
+        <div class="header-actions">
+          <a href="./login.html" class="btn btn-secondary">Iniciar sesión</a>
+          <a href="#cta" class="btn btn-primary">Solicitar demo</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-section">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow">Analítica publicitaria para restaurantes</span>
+            <h1>
+              Entiende tus campañas de Meta Ads con un panel claro,
+              visual y accionable
+            </h1>
+            <p class="hero-text">
+              Conecta tu cuenta de Meta y visualiza gasto, impresiones,
+              alcance, clics, audiencias, plataformas, ubicaciones e
+              insights automáticos en un solo lugar.
+            </p>
+
+            <div class="hero-actions">
+              <a href="#cta" class="btn btn-primary btn-lg">Quiero una demo</a>
+              <a href="#panel" class="btn btn-ghost btn-lg">Ver el panel</a>
+            </div>
+
+            <ul class="hero-points">
+              <li>Campañas y métricas en un solo dashboard.</li>
+              <li>Audiencias, países, regiones y plataformas con mejor respuesta.</li>
+              <li>Lecturas automáticas para detectar señales del mercado.</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual">
+            <div class="hero-card hero-card-main">
+              <div class="hero-card-top">
+                <span class="status-dot"></span>
+                <span>Integración Meta Ads</span>
+                <span class="status-badge">Activa</span>
+              </div>
+
+              <div class="hero-mini-stats">
+                <div class="hero-mini-card">
+                  <span>CTR promedio</span>
+                  <strong>2.9%</strong>
+                </div>
+
+                <div class="hero-mini-card">
+                  <span>Mejor país</span>
+                  <strong>Colombia</strong>
+                </div>
+              </div>
+
+              <div class="hero-kpis">
+                <article class="kpi-card">
+                  <span class="kpi-label">Gasto</span>
+                  <strong class="kpi-value">$1.280.000</strong>
+                  <small class="kpi-meta">Últimos 30 días</small>
+                </article>
+
+                <article class="kpi-card">
+                  <span class="kpi-label">Impresiones</span>
+                  <strong class="kpi-value">248.300</strong>
+                  <small class="kpi-meta">Rendimiento total</small>
+                </article>
+
+                <article class="kpi-card">
+                  <span class="kpi-label">Alcance</span>
+                  <strong class="kpi-value">164.900</strong>
+                  <small class="kpi-meta">Personas únicas</small>
+                </article>
+
+                <article class="kpi-card">
+                  <span class="kpi-label">Clics</span>
+                  <strong class="kpi-value">7.420</strong>
+                  <small class="kpi-meta">Interacciones al enlace</small>
+                </article>
+              </div>
+
+              <div class="hero-chart-area">
+                <div class="chart-card">
+                  <div class="chart-card-header">
+                    <h3>Lectura del mercado</h3>
+                    <span>Automática</span>
+                  </div>
+
+                  <div class="signal-grid">
+                    <div class="signal-box">
+                      <span>Segmento líder</span>
+                      <strong>25-34 / Mujeres</strong>
+                    </div>
+                    <div class="signal-box">
+                      <span>Plataforma líder</span>
+                      <strong>Instagram</strong>
+                    </div>
+                    <div class="signal-box">
+                      <span>Ubicación líder</span>
+                      <strong>Medellín</strong>
+                    </div>
+                    <div class="signal-box">
+                      <span>Campaña líder</span>
+                      <strong>Menú ejecutivo</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust-strip">
+        <div class="container trust-content">
+          <p>Diseñado para restaurantes que quieren entender mejor su publicidad digital.</p>
+          <div class="trust-tags">
+            <span>Meta Ads</span>
+            <span>Campañas</span>
+            <span>Audiencias</span>
+            <span>Ubicaciones</span>
+            <span>Insights</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="features-section" id="beneficios">
+        <div class="container">
+          <div class="section-heading">
+            <span class="eyebrow">Qué resuelve</span>
+            <h2>Una vista clara del rendimiento publicitario</h2>
+            <p>
+              Convierte métricas dispersas en una lectura simple para
+              tomar decisiones sobre campañas, audiencias y distribución del presupuesto.
+            </p>
+          </div>
+
+          <div class="feature-grid">
+            <article class="feature-card">
+              <div class="feature-icon">01</div>
+              <h3>Rendimiento en tiempo real</h3>
+              <p>
+                Consulta gasto, impresiones, alcance y clics desde una sola vista,
+                sin perder tiempo entre múltiples pantallas.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon">02</div>
+              <h3>Audiencias con mejor respuesta</h3>
+              <p>
+                Detecta qué edades y géneros concentran mayor alcance y respuesta
+                para orientar mejor las campañas.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon">03</div>
+              <h3>Ubicaciones y plataformas</h3>
+              <p>
+                Comprende en qué países, regiones y plataformas se concentra
+                el impacto publicitario.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon">04</div>
+              <h3>Insights automáticos</h3>
+              <p>
+                La plataforma resume señales del periodo para que identifiques
+                patrones sin revisar manualmente cada gráfico.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="how-section" id="funciona">
+        <div class="container">
+          <div class="section-heading">
+            <span class="eyebrow">Cómo funciona</span>
+            <h2>Un flujo simple para entender tu publicidad</h2>
+          </div>
+
+          <div class="steps-grid">
+            <article class="step-card">
+              <span class="step-number">1</span>
+              <h3>Conecta tu cuenta de Meta</h3>
+              <p>
+                Vincula tu cuenta publicitaria para consultar campañas,
+                métricas y demografía publicitaria desde la plataforma.
+              </p>
+            </article>
+
+            <article class="step-card">
+              <span class="step-number">2</span>
+              <h3>Visualiza tus campañas</h3>
+              <p>
+                Revisa indicadores principales, distribución del gasto
+                y rendimiento por campaña desde un panel centralizado.
+              </p>
+            </article>
+
+            <article class="step-card">
+              <span class="step-number">3</span>
+              <h3>Descubre qué está funcionando</h3>
+              <p>
+                Analiza edades, plataformas, países, regiones e insights
+                para ajustar mejor tu estrategia.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-preview-section" id="panel">
+        <div class="container dashboard-preview-grid">
+          <div class="preview-copy">
+            <span class="eyebrow">Vista del panel</span>
+            <h2>El dashboard explicado de forma visual, clara y comercial</h2>
+            <p>
+              La experiencia está pensada para que un restaurante entienda rápido
+              qué campaña lidera, dónde está su mejor audiencia y qué señales
+              del mercado publicitario debe seguir.
+            </p>
+
+            <ul class="preview-list">
+              <li>KPIs visibles desde el primer bloque.</li>
+              <li>Gráficas por campañas, edades, plataformas y ubicaciones.</li>
+              <li>Lectura automática del periodo con hallazgos clave.</li>
+              <li>Conexión Meta Ads integrada desde el propio sistema.</li>
+            </ul>
+          </div>
+
+          <div class="preview-frame preview-frame-dashboard">
+            <div class="landing-dashboard-mini">
+              <div class="mini-kpi-row">
+                <article class="mini-kpi-card">
+                  <small>Gasto</small>
+                  <strong>$ 4.460</strong>
+                </article>
+
+                <article class="mini-kpi-card">
+                  <small>Impresiones</small>
+                  <strong>154</strong>
+                </article>
+
+                <article class="mini-kpi-card">
+                  <small>Alcance</small>
+                  <strong>137</strong>
+                </article>
+
+                <article class="mini-kpi-card">
+                  <small>Clics</small>
+                  <strong>24</strong>
+                </article>
+              </div>
+
+              <div class="mini-dashboard-grid">
+                <article class="mini-panel">
+                  <div class="mini-panel-head">
+                    <h3>Rendimiento por campaña</h3>
+                    <span>30 días</span>
+                  </div>
+
+                  <div class="mini-campaign-chart mini-campaign-chart-multi">
+                    <div class="mini-campaign-grid"></div>
+
+                    <div class="mini-campaign-y">
+                      <span>25</span>
+                      <span>20</span>
+                      <span>15</span>
+                      <span>10</span>
+                      <span>5</span>
+                      <span>0</span>
+                    </div>
+
+                    <div class="mini-campaign-bars mini-campaign-bars-multi">
+                      <div class="mini-campaign-group">
+                        <div class="mini-campaign-bar" style="height: 94%;"></div>
+                        <small>Menú ejecutivo</small>
+                      </div>
+
+                      <div class="mini-campaign-group">
+                        <div class="mini-campaign-bar is-secondary" style="height: 78%;"></div>
+                        <small>Combo lunch</small>
+                      </div>
+
+                      <div class="mini-campaign-group">
+                        <div class="mini-campaign-bar is-soft" style="height: 62%;"></div>
+                        <small>Desayuno express</small>
+                      </div>
+
+                      <div class="mini-campaign-group">
+                        <div class="mini-campaign-bar is-secondary" style="height: 86%;"></div>
+                        <small>Cena 2x1</small>
+                      </div>
+
+                      <div class="mini-campaign-group">
+                        <div class="mini-campaign-bar is-soft" style="height: 55%;"></div>
+                        <small>Postres viernes</small>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <div class="mini-right-stack">
+                  <div class="mini-two-charts">
+                    <article class="mini-panel">
+                      <div class="mini-panel-head">
+                        <h3>Distribución de gasto</h3>
+                        <span>COP</span>
+                      </div>
+
+                      <div class="mini-donut-wrap mini-donut-wrap-rich">
+                        <div class="mini-donut mini-donut-multi"></div>
+
+                        <div class="mini-legend-list">
+                          <div class="mini-legend-item">
+                            <i class="legend-dot legend-blue"></i>
+                            <span>Menú ejecutivo</span>
+                            <strong>$1.280</strong>
+                          </div>
+
+                          <div class="mini-legend-item">
+                            <i class="legend-dot legend-cyan"></i>
+                            <span>Combo lunch</span>
+                            <strong>$980</strong>
+                          </div>
+
+                          <div class="mini-legend-item">
+                            <i class="legend-dot legend-violet"></i>
+                            <span>Desayuno express</span>
+                            <strong>$760</strong>
+                          </div>
+
+                          <div class="mini-legend-item">
+                            <i class="legend-dot legend-green"></i>
+                            <span>Cena 2x1</span>
+                            <strong>$840</strong>
+                          </div>
+
+                          <div class="mini-legend-item">
+                            <i class="legend-dot legend-soft"></i>
+                            <span>Postres viernes</span>
+                            <strong>$600</strong>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article class="mini-panel">
+                      <div class="mini-panel-head">
+                        <h3>Distribución por edades</h3>
+                        <span>Ver pastel</span>
+                      </div>
+
+                      <div class="mini-age-chart">
+                        <div class="mini-age-grid"></div>
+
+                        <div class="mini-age-bars">
+                          <div class="mini-age-group">
+                            <div class="mini-age-pair">
+                              <span class="bar-purple" style="height: 0%"></span>
+                              <span class="bar-cyan" style="height: 0%"></span>
+                            </div>
+                            <small>13-17</small>
+                          </div>
+
+                          <div class="mini-age-group">
+                            <div class="mini-age-pair">
+                              <span class="bar-purple" style="height: 34%"></span>
+                              <span class="bar-cyan" style="height: 10%"></span>
+                            </div>
+                            <small>18-24</small>
+                          </div>
+
+                          <div class="mini-age-group">
+                            <div class="mini-age-pair">
+                              <span class="bar-purple" style="height: 94%"></span>
+                              <span class="bar-cyan" style="height: 64%"></span>
+                            </div>
+                            <small>25-34</small>
+                          </div>
+
+                          <div class="mini-age-group">
+                            <div class="mini-age-pair">
+                              <span class="bar-purple" style="height: 88%"></span>
+                              <span class="bar-cyan" style="height: 49%"></span>
+                            </div>
+                            <small>35-44</small>
+                          </div>
+
+                          <div class="mini-age-group">
+                            <div class="mini-age-pair">
+                              <span class="bar-purple" style="height: 73%"></span>
+                              <span class="bar-cyan" style="height: 49%"></span>
+                            </div>
+                            <small>45-54</small>
+                          </div>
+
+                          <div class="mini-age-group">
+                            <div class="mini-age-pair">
+                              <span class="bar-purple" style="height: 68%"></span>
+                              <span class="bar-cyan" style="height: 29%"></span>
+                            </div>
+                            <small>55-64</small>
+                          </div>
+
+                          <div class="mini-age-group">
+                            <div class="mini-age-pair">
+                              <span class="bar-purple" style="height: 63%"></span>
+                              <span class="bar-cyan" style="height: 49%"></span>
+                            </div>
+                            <small>65+</small>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+
+                  <div class="mini-horizontal-grid">
+                    <article class="mini-panel">
+                      <div class="mini-panel-head">
+                        <h3>Alcance por plataforma</h3>
+                      </div>
+
+                      <div class="mini-horizontal-chart mini-horizontal-chart-list">
+                        <div class="mini-horizontal-row">
+                          <label>Facebook</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-blue" style="width: 92%"></span>
+                          </div>
+                        </div>
+
+                        <div class="mini-horizontal-row">
+                          <label>Instagram</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-cyan" style="width: 84%"></span>
+                          </div>
+                        </div>
+
+                        <div class="mini-horizontal-row">
+                          <label>Messenger</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-violet" style="width: 46%"></span>
+                          </div>
+                        </div>
+
+                        <div class="mini-horizontal-row">
+                          <label>Audience</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-green" style="width: 38%"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article class="mini-panel">
+                      <div class="mini-panel-head">
+                        <h3>Alcance por país</h3>
+                      </div>
+
+                      <div class="mini-horizontal-chart mini-horizontal-chart-list">
+                        <div class="mini-horizontal-row">
+                          <label>CO</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-green" style="width: 94%"></span>
+                          </div>
+                        </div>
+
+                        <div class="mini-horizontal-row">
+                          <label>MX</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-blue" style="width: 61%"></span>
+                          </div>
+                        </div>
+
+                        <div class="mini-horizontal-row">
+                          <label>PE</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-cyan" style="width: 44%"></span>
+                          </div>
+                        </div>
+
+                        <div class="mini-horizontal-row">
+                          <label>CL</label>
+                          <div class="mini-horizontal-track">
+                            <span class="bar-violet" style="width: 29%"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </div>
+
+              <article class="mini-panel mini-region-panel">
+                <div class="mini-panel-head">
+                  <h3>Alcance por región (CO)</h3>
+                  <span class="mini-select">CO</span>
+                </div>
+
+                <div class="mini-region-list">
+                  <div class="mini-region-row">
+                    <label>Distrito Especial</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 92%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Antioquia</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 84%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Valle del Cauca</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 72%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Atlantico</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 32%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Bolivar</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 32%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Cordoba</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 28%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Santander</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 28%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Norte de Santander</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 24%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Meta</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 20%"></span>
+                    </div>
+                  </div>
+
+                  <div class="mini-region-row">
+                    <label>Huila</label>
+                    <div class="mini-horizontal-track">
+                      <span class="bar-violet" style="width: 16%"></span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="benefit-band">
+        <div class="container benefit-band-grid">
+          <article class="benefit-mini-card">
+            <strong>Más claridad</strong>
+            <p>Entiende mejor qué campañas están empujando resultados visibles.</p>
+          </article>
+          <article class="benefit-mini-card">
+            <strong>Menos ruido</strong>
+            <p>Reúne métricas y segmentos importantes en una sola experiencia.</p>
+          </article>
+          <article class="benefit-mini-card">
+            <strong>Más velocidad</strong>
+            <p>Detecta señales del mercado sin revisar manualmente cada dato.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="faq-section" id="faq">
+        <div class="container">
+          <div class="section-heading">
+            <span class="eyebrow">Preguntas frecuentes</span>
+            <h2>Lo que un posible cliente quiere entender rápido</h2>
+          </div>
+
+          <div class="faq-grid">
+            <details class="faq-item" open>
+              <summary>¿Qué hace esta plataforma?</summary>
+              <p>
+                Centraliza información de Meta Ads para mostrar campañas,
+                audiencias, ubicaciones, plataformas e insights publicitarios.
+              </p>
+            </details>
+
+            <details class="faq-item">
+              <summary>¿Está pensada para restaurantes?</summary>
+              <p>
+                Sí, el enfoque de la plataforma está orientado a negocios
+                gastronómicos que quieren entender mejor su publicidad digital.
+              </p>
+            </details>
+
+            <details class="faq-item">
+              <summary>¿Necesito saber de anuncios para usarla?</summary>
+              <p>
+                No. La idea es traducir la data técnica en una lectura visual,
+                clara y más accionable.
+              </p>
+            </details>
+
+            <details class="faq-item">
+              <summary>¿Qué tipo de información voy a ver?</summary>
+              <p>
+                Gasto, impresiones, alcance, clics, campañas, edades, plataformas,
+                países, regiones y señales automáticas del periodo.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section" id="cta">
+        <div class="container cta-box">
+          <div class="cta-copy">
+            <span class="eyebrow">Empieza a mostrar tu producto</span>
+            <h2>Convierte tu dashboard en una propuesta comercial atractiva</h2>
+            <p>
+              Presenta la plataforma con una página clara, moderna y orientada
+              a explicar el valor del sistema antes del inicio de sesión.
+            </p>
+          </div>
+
+          <div class="cta-actions">
+            <a href="./login.html" class="btn btn-secondary btn-lg">Ir al login</a>
+            <a href="#top" class="btn btn-primary btn-lg">Subir arriba</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content">
+        <div>
+          <strong>MarketStats</strong>
+          <p>Analítica publicitaria para restaurantes basada en Meta Ads.</p>
+        </div>
+
+        <div class="footer-links">
+          <a href="#beneficios">Beneficios</a>
+          <a href="#funciona">Cómo funciona</a>
+          <a href="#panel">Panel</a>
+          <a href="./login.html">Login</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>Rendimiento por campaña

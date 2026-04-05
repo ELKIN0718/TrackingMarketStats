@@ -4,23 +4,85 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro Restaurante</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Crear cuenta</h1>
+  <main class="auth-page">
+    <section class="auth-shell">
+      <div class="auth-topbar">
+        <button type="button" class="auth-back" onclick="history.back()" aria-label="Volver a la página anterior">
+          <span class="auth-back-icon">←</span>
+          <span>Volver</span>
+        </button>
 
-    <form id="registerForm">
-      <input type="text" id="name" placeholder="Nombre del restaurante" required>
-      <input type="email" id="email" placeholder="Correo del restaurante" required>
-      <input type="password" id="password" placeholder="Contraseña" required>
-      <button type="submit">Registrarme</button>
-    </form>
+        <a href="./index.html" class="auth-brand auth-brand-link" aria-label="Ir a la página principal">
+          <div class="auth-logo">MS</div>
+          <div class="auth-brand-copy">
+            <span class="auth-kicker">MarketStats</span>
+            <strong>Meta Ads para restaurantes</strong>
+          </div>
+        </a>
+      </div>
 
-    <p id="message"></p>
+      <div class="auth-card auth-card-register">
+        <span class="auth-eyebrow">Acceso a la plataforma</span>
+        <h1>Crear cuenta</h1>
+        <p class="auth-text">
+          Registra tu restaurante para comenzar a visualizar campañas,
+          audiencias, ubicaciones e insights publicitarios desde un solo panel.
+        </p>
 
-    <p>¿Ya tienes cuenta? <a href="./login.html">Inicia sesión</a></p>
-  </div>
+        <form id="registerForm" class="auth-form">
+          <div class="field-group">
+            <label for="name">Nombre del restaurante</label>
+            <input
+              type="text"
+              id="name"
+              placeholder="Ej. Restaurante Sazón del Día"
+              required
+            >
+          </div>
+
+          <div class="field-group">
+            <label for="email">Correo del restaurante</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="contacto@restaurante.com"
+              required
+            >
+          </div>
+
+          <div class="field-group">
+            <label for="password">Contraseña</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="••••••••"
+              required
+            >
+          </div>
+
+          <button type="submit" class="auth-submit">Registrarme</button>
+        </form>
+
+        <p id="message" class="auth-message"></p>
+
+        <p class="auth-footer">
+          ¿Ya tienes cuenta?
+          <a href="./login.html">Inicia sesión</a>
+        </p>
+      </div>
+    </section>
+  </main>
 
   <script src="./js/register.js"></script>
 </body>
