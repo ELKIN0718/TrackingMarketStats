@@ -1,6 +1,19 @@
-const token = localStorage.getItem('token');
-
 const params = new URLSearchParams(window.location.search);
+const restoredToken = params.get('restore_token');
+
+if (restoredToken) {
+  localStorage.setItem('token', restoredToken);
+  params.delete('restore_token');
+
+  const cleanQuery = params.toString();
+  const cleanUrl = cleanQuery
+    ? `${window.location.pathname}?${cleanQuery}`
+    : window.location.pathname;
+
+  window.history.replaceState({}, '', cleanUrl);
+}
+
+const token = localStorage.getItem('token');
 const metaConnected = params.get('meta');
 
 if (!token) {
@@ -1138,6 +1151,8 @@ async function applyCampaignFilter() {
 }
 
 async function loadAdsDashboard(restaurantId) {
+  currentRestaurantId = String(restaurantId);
+
   try {
     const adAccountsRes = await fetch(`http://localhost:3000/api/meta/adaccounts/${restaurantId}`);
     const adAccountsResult = await adAccountsRes.json();
@@ -1150,7 +1165,6 @@ async function loadAdsDashboard(restaurantId) {
     }
 
     const firstAccountId = adAccountsResult.data[0].id.replace('act_', '');
-    currentRestaurantId = restaurantId;
     currentAdAccountId = firstAccountId;
 
     const insightsRes = await fetch(`http://localhost:3000/api/meta/insights/${restaurantId}/${firstAccountId}`);
@@ -1237,7 +1251,7 @@ async function loadProfile() {
     const res = await fetch('http://localhost:3000/api/auth/profile', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -1253,8 +1267,11 @@ async function loadProfile() {
       sidebarRestaurantName.textContent = result.restaurant.name || 'Restaurante';
     }
 
-    const restaurantId = result.restaurant.id;
+    const restaurantId = String(result.restaurant.id);
+    currentRestaurantId = restaurantId;
+
     localStorage.setItem('restaurant_id', restaurantId);
+    localStorage.setItem('restaurantId', restaurantId);
 
     await loadMetaStatus(restaurantId);
     await loadAdsDashboard(restaurantId);
@@ -1277,6 +1294,7 @@ async function loadProfile() {
     localStorage.removeItem('token');
     localStorage.removeItem('restaurant');
     localStorage.removeItem('restaurant_id');
+    localStorage.removeItem('restaurantId');
     window.location.href = './login.html';
   }
 }
@@ -1352,21 +1370,30 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 
 if (btnVincularMeta) {
   btnVincularMeta.addEventListener('click', () => {
-    const restaurantId = localStorage.getItem('restaurant_id');
+    const token = localStorage.getItem('token');
 
-    if (!restaurantId) {
-      setMetaStatus('status-error', 'No se encontró el restaurante logueado.');
+    if (!token) {
+      window.location.href = './login.html';
       return;
     }
 
-    setMetaStatus('status-info', 'Redirigiendo a Meta...');
-    setMetaButtonState({
-      disabled: true,
-      text: 'Conectando...',
-      styleClass: 'btn-disabled'
-    });
+    const storedRestaurantId =
+      currentRestaurantId ||
+      localStorage.getItem('restaurant_id') ||
+      localStorage.getItem('restaurantId');
 
-    window.location.href = `http://localhost:3000/api/meta/connect?restaurant_id=${restaurantId}`;
+    if (!storedRestaurantId) {
+      setMetaStatus('status-error', 'No se encontró el restaurante autenticado.');
+      return;
+    }
+
+    currentRestaurantId = String(storedRestaurantId);
+
+    const connectUrl = new URL('http://localhost:3000/api/meta/connect');
+    connectUrl.searchParams.set('restaurant_id', currentRestaurantId);
+    connectUrl.searchParams.set('app_token', token);
+
+    window.location.href = connectUrl.toString();
   });
 }
 

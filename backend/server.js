@@ -51,17 +51,27 @@ async function fetchJson(url, options = {}) {
 
 // PASO 1: Redirige al login de Facebook
 app.get('/api/meta/connect', (req, res) => {
-  const { restaurant_id } = req.query;
+  const { restaurant_id, app_token } = req.query;
 
   if (!restaurant_id) {
     return res.status(400).json({ error: 'Falta restaurant_id' });
   }
 
+  const statePayload = {
+    restaurant_id,
+    app_token: app_token || null
+  };
+
+  const state = Buffer
+    .from(JSON.stringify(statePayload), 'utf8')
+    .toString('base64');
+
   const params = new URLSearchParams({
     client_id: process.env.META_APP_ID,
-    redirect_uri: `${process.env.META_REDIRECT_URI}?restaurant_id=${restaurant_id}`,
+    redirect_uri: process.env.META_REDIRECT_URI,
     scope: 'ads_read,ads_management',
     response_type: 'code',
+    state
   });
 
   res.redirect(`https://www.facebook.com/v20.0/dialog/oauth?${params.toString()}`);
@@ -69,10 +79,25 @@ app.get('/api/meta/connect', (req, res) => {
 
 // PASO 2: Facebook nos devuelve el código → lo cambiamos por un token
 app.get('/api/meta/callback', async (req, res) => {
-  const { code, error, restaurant_id } = req.query;
+  const { code, error, state } = req.query;
 
   if (error) {
     return res.status(400).json({ error: 'El usuario rechazó el acceso a Meta.' });
+  }
+
+  let restaurant_id = null;
+  let appToken = null;
+
+  try {
+    if (state) {
+      const decodedState = JSON.parse(
+        Buffer.from(String(state), 'base64').toString('utf8')
+      );
+      restaurant_id = decodedState.restaurant_id || null;
+      appToken = decodedState.app_token || null;
+    }
+  } catch (parseError) {
+    return res.status(400).json({ error: 'State inválido en callback de Meta.' });
   }
 
   if (!restaurant_id) {
@@ -84,8 +109,8 @@ app.get('/api/meta/callback', async (req, res) => {
     tokenUrl.search = new URLSearchParams({
       client_id: process.env.META_APP_ID,
       client_secret: process.env.META_APP_SECRET,
-      redirect_uri: `${process.env.META_REDIRECT_URI}?restaurant_id=${restaurant_id}`,
-      code,
+      redirect_uri: process.env.META_REDIRECT_URI,
+      code
     }).toString();
 
     const tokenRes = await fetchJson(tokenUrl.toString());
@@ -94,7 +119,7 @@ app.get('/api/meta/callback', async (req, res) => {
     const userUrl = new URL('https://graph.facebook.com/v20.0/me');
     userUrl.search = new URLSearchParams({
       access_token: accessToken,
-      fields: 'id,name',
+      fields: 'id,name'
     }).toString();
 
     const userRes = await fetchJson(userUrl.toString());
@@ -112,7 +137,14 @@ app.get('/api/meta/callback', async (req, res) => {
       [restaurant_id, metaUserId, metaUserName, accessToken]
     );
 
-    return res.redirect('http://localhost:5500/frontend/dashboard.html?meta=connected');
+    const redirectUrl = new URL('http://localhost:5500/frontend/dashboard.html');
+    redirectUrl.searchParams.set('meta', 'connected');
+
+    if (appToken) {
+      redirectUrl.searchParams.set('restore_token', appToken);
+    }
+
+    return res.redirect(redirectUrl.toString());
   } catch (err) {
     console.error('Error Meta callback:', err.response?.data || err.message);
     res.status(500).json({
