@@ -1158,9 +1158,12 @@ async function loadAdsDashboard(restaurantId) {
     const adAccountsResult = await adAccountsRes.json();
 
     if (!adAccountsRes.ok || !adAccountsResult.data || adAccountsResult.data.length === 0) {
+      currentAdAccountId = null;
       allCampaignRows = [];
       currentVisibleCampaignRows = [];
       clearVisualDashboard();
+
+      await loadMetaStatus(restaurantId);
       return;
     }
 
@@ -1174,6 +1177,8 @@ async function loadAdsDashboard(restaurantId) {
       allCampaignRows = [];
       currentVisibleCampaignRows = [];
       clearVisualDashboard();
+
+      await loadMetaStatus(restaurantId);
       return;
     }
 
@@ -1188,11 +1193,17 @@ async function loadAdsDashboard(restaurantId) {
     await loadCountryDemographics(restaurantId, firstAccountId, 'all');
     await loadPlatformDemographics(restaurantId, firstAccountId, 'all');
     renderMarketStudy();
+
+    await loadMetaStatus(restaurantId);
   } catch (error) {
     console.error('Error cargando dashboard de publicidad:', error);
+
+    currentAdAccountId = null;
     allCampaignRows = [];
     currentVisibleCampaignRows = [];
     clearVisualDashboard();
+
+    await loadMetaStatus(restaurantId);
   }
 }
 
@@ -1281,13 +1292,11 @@ async function loadProfile() {
     }, 8 * 60 * 60 * 1000);
 
     if (metaConnected === 'connected') {
-      setMetaStatus('status-success', 'Meta vinculada correctamente.');
-      setMetaPanelState({
-        connected: true,
-        title: 'Meta vinculada',
-        badgeText: 'Vinculada',
-        tone: 'is-success'
-      });
+      await loadMetaStatus(restaurantId);
+
+      if (metaIsConnected) {
+        setMetaStatus('status-success', 'Meta vinculada correctamente.');
+      }
     }
   } catch (error) {
     console.error(error);
@@ -1307,7 +1316,7 @@ async function loadMetaStatus(restaurantId) {
     if (result.connected) {
       setMetaStatus(
         'status-success',
-        `Meta ya vinculada con: ${result.connection.meta_user_name}`
+        `Meta ya vinculada con ${result.connection.meta_user_name}`
       );
 
       setMetaButtonState({
@@ -1322,22 +1331,24 @@ async function loadMetaStatus(restaurantId) {
         badgeText: 'Vinculada',
         tone: 'is-success'
       });
-    } else {
-      setMetaStatus('status-warning', 'Meta no vinculada.');
 
-      setMetaButtonState({
-        disabled: false,
-        text: 'Vincular Meta',
-        styleClass: 'btn-primary'
-      });
-
-      setMetaPanelState({
-        connected: false,
-        title: 'Conexión pendiente',
-        badgeText: 'No vinculada',
-        tone: 'is-warning'
-      });
+      return;
     }
+
+    setMetaStatus('status-warning', 'Meta no vinculada.');
+
+    setMetaButtonState({
+      disabled: false,
+      text: 'Vincular Meta',
+      styleClass: 'btn-primary'
+    });
+
+    setMetaPanelState({
+      connected: false,
+      title: 'Conexión pendiente',
+      badgeText: 'No vinculada',
+      tone: 'is-warning'
+    });
   } catch (error) {
     console.error(error);
 

@@ -1,3 +1,9 @@
+const existingToken = localStorage.getItem('token');
+
+if (existingToken) {
+  window.location.replace('./dashboard.html');
+}
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
