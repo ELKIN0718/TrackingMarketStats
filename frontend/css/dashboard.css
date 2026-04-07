@@ -646,8 +646,7 @@ select {
 }
 
 .chart-card h3 {
-  margin-top: 0;
-  margin-bottom: 16px;
+  margin: 0;
   font-size: 1.05rem;
   letter-spacing: -0.01em;
 }
@@ -1149,6 +1148,10 @@ body.market-modal-open {
     align-items: stretch;
   }
 
+  .chart-header > .chart-title-row {
+    align-self: flex-start;
+  }
+
   .chart-filter-select,
   .chart-toggle {
     width: 100%;
@@ -1183,4 +1186,145 @@ body.market-modal-open {
   .integration-mini-badge {
     white-space: normal;
   }
+}
+
+.kpi-card {
+  position: relative;
+  min-height: 116px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(16, 24, 40, 0.1);
+  cursor: pointer;
+}
+
+.kpi-card::after {
+  content: attr(data-info);
+  position: absolute;
+  bottom: -1.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #172033 0%, #24324d 100%);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
+}
+
+.kpi-card:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.chart-title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  max-width: fit-content;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.chart-card > .chart-title-row {
+  margin-bottom: 16px;
+}
+
+.chart-header > .chart-title-row {
+  margin-bottom: 0;
+}
+
+.chart-title-row h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.info-trigger {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  flex: 0 0 24px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1877f2;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(24, 119, 242, 0.22);
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.info-trigger:hover {
+  background: #0f66d0;
+  transform: translateY(-1px);
+}
+
+.info-trigger:focus-visible {
+  outline: 3px solid rgba(24, 119, 242, 0.2);
+  outline-offset: 3px;
+}
+
+.info-trigger::after {
+  content: attr(data-info);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%);
+  min-width: 220px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #172033 0%, #24324d 100%);
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
+  z-index: 30;
+}
+
+.info-trigger::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: #24324d;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 29;
+}
+
+.info-trigger:hover::after,
+.info-trigger:hover::before,
+.info-trigger:focus-visible::after,
+.info-trigger:focus-visible::before {
+  opacity: 1;
 }

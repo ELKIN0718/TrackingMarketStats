@@ -1,409 +1,583 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | MarketStats</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | MarketStats</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-  <link rel="stylesheet" href="./css/dashboard.css" />
-</head>
-<body>
-  <main class="dashboard-page">
-    <div class="dashboard-shell" id="dashboardShell">
-      <aside class="dashboard-sidebar" id="dashboardSidebar" aria-label="Barra lateral">
-        <div class="sidebar-top">
-          <div class="dashboard-logo">MS</div>
+    <link rel="stylesheet" href="./css/dashboard.css" />
+  </head>
+  <body>
+    <main class="dashboard-page">
+      <div class="dashboard-shell" id="dashboardShell">
+        <aside
+          class="dashboard-sidebar"
+          id="dashboardSidebar"
+          aria-label="Barra lateral"
+        >
+          <div class="sidebar-top">
+            <div class="dashboard-logo">MS</div>
 
-          <div class="sidebar-brand-copy">
-            <span class="sidebar-brand-kicker">MarketStats</span>
-            <strong class="sidebar-brand-name">Dashboard Ads</strong>
-          </div>
-        </div>
-
-        <div class="sidebar-body">
-          <div class="sidebar-section sidebar-brand-panel">
-            <p class="sidebar-kicker">Panel publicitario</p>
-            <h2 class="sidebar-title">Control del restaurante</h2>
-            <p class="sidebar-text">
-              Controla campañas, audiencias, ubicaciones e insights desde un solo lugar.
-            </p>
-          </div>
-        </div>
-
-        <div class="sidebar-footer">
-          <div class="sidebar-section sidebar-meta-card">
-            <div class="sidebar-meta-header">
-              <div class="sidebar-meta-header-main">
-                <span id="metaIndicatorDot" class="integration-dot is-warning"></span>
-
-                <div>
-                  <p class="sidebar-card-label">Integración Meta Ads</p>
-                  <strong id="metaIndicatorTitle" class="sidebar-meta-title">Conexión pendiente</strong>
-                </div>
-              </div>
-
-              <span id="metaIndicatorBadge" class="integration-mini-badge is-warning">No vinculada</span>
-            </div>
-
-            <p class="sidebar-card-meta">
-              Conecta tu cuenta de Meta para sincronizar campañas, métricas y demografía publicitaria.
-            </p>
-
-            <div class="sidebar-meta-actions">
-              <button id="btnVincularMeta" type="button" class="btn btn-primary btn-meta-compact">
-                Vincular Meta
-              </button>
-            </div>
-
-            <p id="metaStatus" class="meta-status status-warning">Meta no vinculada.</p>
-          </div>
-
-          <div class="sidebar-user">
-            <div class="sidebar-user-avatar">MS</div>
-            <div class="sidebar-user-copy">
-              <strong id="sidebarRestaurantName">Restaurante</strong>
-              <span>Panel activo</span>
+            <div class="sidebar-brand-copy">
+              <span class="sidebar-brand-kicker">MarketStats</span>
+              <strong class="sidebar-brand-name">Dashboard Ads</strong>
             </div>
           </div>
 
-          <button id="logoutBtn" class="btn btn-ghost sidebar-logout" type="button">
-            Cerrar sesión
-          </button>
-        </div>
-      </aside>
-
-      <div class="dashboard-main">
-        <div class="dashboard-main-inner">
-          <header class="dashboard-header" id="dashboardTop">
-            <div class="dashboard-hero">
-              <p class="eyebrow">Panel de control</p>
-              <h1>Dashboard del restaurante</h1>
-              <p id="welcome" class="welcome-text">
-                Visualiza campañas, métricas y señales del mercado publicitario desde un solo panel.
+          <div class="sidebar-body">
+            <div class="sidebar-section sidebar-brand-panel">
+              <p class="sidebar-kicker">Panel publicitario</p>
+              <h2 class="sidebar-title">Control del restaurante</h2>
+              <p class="sidebar-text">
+                Controla campañas, audiencias, ubicaciones e insights desde un
+                solo lugar.
               </p>
             </div>
-          </header>
+          </div>
 
-          <div class="dashboard-content">
-            <section class="ads-section" id="adsSection">
-              <div class="section-header">
-                <div>
-                  <h2>Publicidad</h2>
-                  <p class="section-subtitle">
-                    Rendimiento, audiencias y distribución de tus campañas
-                  </p>
+          <div class="sidebar-footer">
+            <div class="sidebar-section sidebar-meta-card">
+              <div class="sidebar-meta-header">
+                <div class="sidebar-meta-header-main">
+                  <span
+                    id="metaIndicatorDot"
+                    class="integration-dot is-warning"
+                  ></span>
+
+                  <div>
+                    <p class="sidebar-card-label">Integración Meta Ads</p>
+                    <strong id="metaIndicatorTitle" class="sidebar-meta-title"
+                      >Conexión pendiente</strong
+                    >
+                  </div>
                 </div>
 
-                <button id="refreshAdsBtn" type="button" class="btn btn-primary">
-                  Actualizar datos
+                <span
+                  id="metaIndicatorBadge"
+                  class="integration-mini-badge is-warning"
+                  >No vinculada</span
+                >
+              </div>
+
+              <p class="sidebar-card-meta">
+                Conecta tu cuenta de Meta para sincronizar campañas, métricas y
+                demografía publicitaria.
+              </p>
+
+              <div class="sidebar-meta-actions">
+                <button
+                  id="btnVincularMeta"
+                  type="button"
+                  class="btn btn-primary btn-meta-compact"
+                >
+                  Vincular Meta
                 </button>
               </div>
 
-              <div class="campaign-filter-card">
-                <label for="campaignSelect" class="campaign-filter-label">Selecciona una campaña</label>
-                <select id="campaignSelect" class="campaign-select">
-                  <option value="all">Todas las campañas</option>
-                </select>
+              <p id="metaStatus" class="meta-status status-warning">
+                Meta no vinculada.
+              </p>
+            </div>
+
+            <div class="sidebar-user">
+              <div class="sidebar-user-avatar">MS</div>
+              <div class="sidebar-user-copy">
+                <strong id="sidebarRestaurantName">Restaurante</strong>
+                <span>Panel activo</span>
               </div>
+            </div>
 
-              <div class="kpi-grid">
-                <article class="kpi-card kpi-highlight">
-                  <p class="kpi-label">Gasto</p>
-                  <h3 id="kpiSpend">0</h3>
-                </article>
+            <button
+              id="logoutBtn"
+              class="btn btn-ghost sidebar-logout"
+              type="button"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </aside>
 
-                <article class="kpi-card">
-                  <p class="kpi-label">Impresiones</p>
-                  <h3 id="kpiImpressions">0</h3>
-                </article>
-
-                <article class="kpi-card">
-                  <p class="kpi-label">Alcance</p>
-                  <h3 id="kpiReach">0</h3>
-                </article>
-
-                <article class="kpi-card">
-                  <p class="kpi-label">Clics</p>
-                  <h3 id="kpiClicks">0</h3>
-                </article>
+        <div class="dashboard-main">
+          <div class="dashboard-main-inner">
+            <header class="dashboard-header" id="dashboardTop">
+              <div class="dashboard-hero">
+                <p class="eyebrow">Panel de control</p>
+                <h1>Dashboard del restaurante</h1>
+                <p id="welcome" class="welcome-text">
+                  Visualiza campañas, métricas y señales del mercado
+                  publicitario desde un solo panel.
+                </p>
               </div>
+            </header>
 
-              <div class="charts-grid">
-                <article class="chart-card chart-card-wide">
-                  <h3>Rendimiento por campaña</h3>
-                  <canvas id="campaignChart"></canvas>
-                </article>
-
-                <article class="chart-card">
-                  <h3>Distribución de gasto</h3>
-                  <canvas id="spendChart"></canvas>
-                </article>
-
-                <article class="chart-card">
-                  <div class="chart-header">
-                    <h3>Distribución por edades</h3>
-                    <button id="ageChartToggle" type="button" class="chart-toggle">Ver pastel</button>
+            <div class="dashboard-content">
+              <section class="ads-section" id="adsSection">
+                <div class="section-header">
+                  <div>
+                    <h2>Publicidad</h2>
+                    <p class="section-subtitle">
+                      Rendimiento, audiencias y distribución de tus campañas
+                    </p>
                   </div>
-                  <canvas id="ageChart"></canvas>
-                </article>
 
-                <article class="chart-card">
-                  <h3>Alcance por plataforma</h3>
-                  <canvas id="platformChart"></canvas>
-                </article>
-
-                <article class="chart-card">
-                  <h3>Alcance por país</h3>
-                  <canvas id="countryChart"></canvas>
-                </article>
-
-                <article class="chart-card">
-                  <div class="chart-header">
-                    <h3 id="regionChartTitle">Alcance por región</h3>
-                    <select id="regionCountrySelect" class="chart-filter-select"></select>
-                  </div>
-                  <canvas id="regionChart"></canvas>
-                </article>
-              </div>
-            </section>
-
-            <section class="market-study-section" id="marketSection">
-              <div class="section-header market-study-header">
-                <div>
                   <button
+                    id="refreshAdsBtn"
                     type="button"
-                    id="marketStudyOpenSources"
-                    class="market-title-button"
-                    aria-haspopup="dialog"
-                    aria-controls="marketSourcesModal"
+                    class="btn btn-primary"
                   >
-                    <span>Estudio de mercado</span>
-                    <small>Ver gráficas usadas</small>
+                    Actualizar datos
                   </button>
-
-                  <p class="section-subtitle">
-                    Lectura automática del mercado publicitario usando solo señales de Meta
-                  </p>
                 </div>
-              </div>
 
-              <div class="market-summary-grid">
-                <article class="market-summary-card">
-                  <p class="market-card-label">Segmento líder</p>
-                  <h3 id="marketTopAudienceValue">Sin datos</h3>
-                  <p id="marketTopAudienceMeta" class="market-card-meta">
-                    Aún no hay suficiente información.
-                  </p>
-                </article>
+                <div class="campaign-filter-card">
+                  <label for="campaignSelect" class="campaign-filter-label"
+                    >Selecciona una campaña</label
+                  >
+                  <select id="campaignSelect" class="campaign-select">
+                    <option value="all">Todas las campañas</option>
+                  </select>
+                </div>
 
-                <article class="market-summary-card">
-                  <p class="market-card-label">Plataforma líder</p>
-                  <h3 id="marketTopPlatformValue">Sin datos</h3>
-                  <p id="marketTopPlatformMeta" class="market-card-meta">
-                    Aún no hay suficiente información.
-                  </p>
-                </article>
+                <div class="kpi-grid">
+                  <article
+                    class="kpi-card kpi-highlight"
+                    data-info="Este es el gasto total invertido en la campaña."
+                  >
+                    <p class="kpi-label">Gasto</p>
+                    <h3 id="kpiSpend">0</h3>
+                  </article>
 
-                <article class="market-summary-card">
-                  <p class="market-card-label">Ubicación líder</p>
-                  <h3 id="marketTopLocationValue">Sin datos</h3>
-                  <p id="marketTopLocationMeta" class="market-card-meta">
-                    Aún no hay suficiente información.
-                  </p>
-                </article>
+                  <article
+                    class="kpi-card"
+                    data-info="Número de veces que se mostró el anuncio."
+                  >
+                    <p class="kpi-label">Impresiones</p>
+                    <h3 id="kpiImpressions">0</h3>
+                  </article>
 
-                <article class="market-summary-card">
-                  <p class="market-card-label">Campaña líder</p>
-                  <h3 id="marketTopCampaignValue">Sin datos</h3>
-                  <p id="marketTopCampaignMeta" class="market-card-meta">
-                    Aún no hay suficiente información.
-                  </p>
-                </article>
-              </div>
+                  <article
+                    class="kpi-card"
+                    data-info="Cantidad de personas únicas alcanzadas."
+                  >
+                    <p class="kpi-label">Alcance</p>
+                    <h3 id="kpiReach">0</h3>
+                  </article>
 
-              <div class="market-study-grid">
-                <article class="market-card" id="marketAudienceBlock">
-                  <div class="market-card-header">
-                    <h3>Audiencias con mayor respuesta</h3>
-                    <span class="market-card-tag">Edad + género</span>
-                  </div>
+                  <article
+                    class="kpi-card"
+                    data-info="Número de clics recibidos en el anuncio."
+                  >
+                    <p class="kpi-label">Clicks</p>
+                    <h3 id="kpiClicks">0</h3>
+                  </article>
+                </div>
 
-                  <div class="market-table-wrap">
-                    <table class="market-table">
-                      <thead>
-                        <tr>
-                          <th>Segmento</th>
-                          <th>Alcance</th>
-                          <th>Participación</th>
-                        </tr>
-                      </thead>
-                      <tbody id="marketAudienceTableBody">
-                        <tr>
-                          <td colspan="3">Sin datos disponibles</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </article>
-
-                <article class="market-card">
-                  <div class="market-card-header">
-                    <h3>Ubicaciones con mayor respuesta</h3>
-                    <span class="market-card-tag">País</span>
-                  </div>
-
-                  <div class="market-table-wrap">
-                    <table class="market-table">
-                      <thead>
-                        <tr>
-                          <th>Ubicación</th>
-                          <th>Alcance</th>
-                          <th>Participación</th>
-                        </tr>
-                      </thead>
-                      <tbody id="marketLocationTableBody">
-                        <tr>
-                          <td colspan="3">Sin datos disponibles</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </article>
-
-                <article class="market-card market-card-wide">
-                  <div class="market-card-header">
-                    <h3>Campañas con mayor tracción</h3>
-                    <span class="market-card-tag">Rendimiento</span>
-                  </div>
-
-                  <div class="market-table-wrap">
-                    <table class="market-table">
-                      <thead>
-                        <tr>
-                          <th>Campaña</th>
-                          <th>Clics</th>
-                          <th>CTR</th>
-                          <th>CPC</th>
-                          <th>Gasto</th>
-                        </tr>
-                      </thead>
-                      <tbody id="marketCampaignTableBody">
-                        <tr>
-                          <td colspan="5">Sin datos disponibles</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </article>
-
-                <article class="market-card market-card-wide">
-                  <div class="market-card-header">
-                    <h3>Insights automáticos</h3>
-                    <span class="market-card-tag">Lectura del periodo</span>
-                  </div>
-
-                  <ul id="marketInsightsList" class="market-insights-list">
-                    <li>No hay suficientes datos para generar insights automáticos.</li>
-                  </ul>
-
-                  <div class="market-conclusions-grid">
-                    <div class="market-conclusion-card">
-                      <p class="market-card-label">Hallazgo</p>
-                      <p id="marketConclusionSignal" class="market-conclusion-text">
-                        Esperando datos de Meta para identificar señales del mercado.
-                      </p>
+                <div class="charts-grid">
+                  <article class="chart-card chart-card-wide">
+                    <div class="chart-title-row">
+                      <h3>Rendimiento por campaña</h3>
+                      <button
+                        type="button"
+                        class="info-trigger"
+                        aria-label="Ver información sobre Rendimiento por campaña"
+                        data-info="Rendimiento comparado entre campañas según clics o resultados principales."
+                      >
+                        ?
+                      </button>
                     </div>
 
-                    <div class="market-conclusion-card">
-                      <p class="market-card-label">Lectura</p>
-                      <p id="marketConclusionReading" class="market-conclusion-text">
-                        Aún no hay volumen suficiente para construir una lectura confiable.
-                      </p>
+                    <canvas id="campaignChart"></canvas>
+                  </article>
+
+                  <article class="chart-card">
+                    <div class="chart-title-row">
+                      <h3>Distribución de gasto</h3>
+                      <button
+                        type="button"
+                        class="info-trigger"
+                        aria-label="Ver información sobre Distribución de gasto"
+                        data-info="Muestra en qué campañas se está usando el presupuesto."
+                      >
+                        ?
+                      </button>
                     </div>
 
-                    <div class="market-conclusion-card">
-                      <p class="market-card-label">Acción sugerida</p>
-                      <p id="marketConclusionAction" class="market-conclusion-text">
-                        Activa campañas y acumula datos para comenzar la comparación de segmentos.
-                      </p>
+                    <canvas id="spendChart"></canvas>
+                  </article>
+
+                  <article class="chart-card">
+                    <div class="chart-header">
+                      <div class="chart-title-row">
+                        <h3>Distribución por edades</h3>
+                        <button
+                          type="button"
+                          class="info-trigger"
+                          aria-label="Ver información sobre Distribución por edades"
+                          data-info="Indica qué edades responden más a tus anuncios."
+                        >
+                          ?
+                        </button>
+                      </div>
+
+                      <button
+                        id="ageChartToggle"
+                        type="button"
+                        class="chart-toggle"
+                      >
+                        Ver pastel
+                      </button>
                     </div>
+
+                    <canvas id="ageChart"></canvas>
+                  </article>
+
+                  <article class="chart-card">
+                    <div class="chart-title-row">
+                      <h3>Alcance por plataforma</h3>
+                      <button
+                        type="button"
+                        class="info-trigger"
+                        aria-label="Ver información sobre Alcance por plataforma"
+                        data-info="Muestra la distribución del alcance entre plataformas publicitarias."
+                      >
+                        ?
+                      </button>
+                    </div>
+
+                    <canvas id="platformChart"></canvas>
+                  </article>
+
+                  <article class="chart-card">
+                    <div class="chart-title-row">
+                      <h3>Alcance por país</h3>
+                      <button
+                        type="button"
+                        class="info-trigger"
+                        aria-label="Ver información sobre Alcance por país"
+                        data-info="Muestra qué países concentran el mayor alcance de tus campañas publicitarias."
+                      >
+                        ?
+                      </button>
+                    </div>
+
+                    <canvas id="countryChart"></canvas>
+                  </article>
+
+                  <article class="chart-card">
+                    <div class="chart-header">
+                      <div class="chart-title-row">
+                        <h3 id="regionChartTitle">Alcance por región</h3>
+                        <button
+                          type="button"
+                          class="info-trigger"
+                          aria-label="Ver información sobre Alcance por región"
+                          data-info="Detalla las regiones con mejor alcance dentro del país seleccionado."
+                        >
+                          ?
+                        </button>
+                      </div>
+
+                      <select
+                        id="regionCountrySelect"
+                        class="chart-filter-select"
+                        aria-label="Seleccionar país para ver alcance por región"
+                      ></select>
+                    </div>
+
+                    <canvas id="regionChart"></canvas>
+                  </article>
+                </div>
+              </section>
+
+              <section class="market-study-section" id="marketSection">
+                <div class="section-header market-study-header">
+                  <div>
+                    <button
+                      type="button"
+                      id="marketStudyOpenSources"
+                      class="market-title-button"
+                      aria-haspopup="dialog"
+                      aria-controls="marketSourcesModal"
+                    >
+                      <span>Estudio de mercado</span>
+                      <small>Ver gráficas usadas</small>
+                    </button>
+
+                    <p class="section-subtitle">
+                      Lectura automática del mercado publicitario usando solo
+                      señales de Meta
+                    </p>
                   </div>
-                </article>
-              </div>
-            </section>
+                </div>
+
+                <div class="market-summary-grid">
+                  <article class="market-summary-card">
+                    <p class="market-card-label">Segmento líder</p>
+                    <h3 id="marketTopAudienceValue">Sin datos</h3>
+                    <p id="marketTopAudienceMeta" class="market-card-meta">
+                      Aún no hay suficiente información.
+                    </p>
+                  </article>
+
+                  <article class="market-summary-card">
+                    <p class="market-card-label">Plataforma líder</p>
+                    <h3 id="marketTopPlatformValue">Sin datos</h3>
+                    <p id="marketTopPlatformMeta" class="market-card-meta">
+                      Aún no hay suficiente información.
+                    </p>
+                  </article>
+
+                  <article class="market-summary-card">
+                    <p class="market-card-label">Ubicación líder</p>
+                    <h3 id="marketTopLocationValue">Sin datos</h3>
+                    <p id="marketTopLocationMeta" class="market-card-meta">
+                      Aún no hay suficiente información.
+                    </p>
+                  </article>
+
+                  <article class="market-summary-card">
+                    <p class="market-card-label">Campaña líder</p>
+                    <h3 id="marketTopCampaignValue">Sin datos</h3>
+                    <p id="marketTopCampaignMeta" class="market-card-meta">
+                      Aún no hay suficiente información.
+                    </p>
+                  </article>
+                </div>
+
+                <div class="market-study-grid">
+                  <article class="market-card" id="marketAudienceBlock">
+                    <div class="market-card-header">
+                      <h3>Audiencias con mayor respuesta</h3>
+                      <span class="market-card-tag">Edad + género</span>
+                    </div>
+
+                    <div class="market-table-wrap">
+                      <table class="market-table">
+                        <thead>
+                          <tr>
+                            <th>Segmento</th>
+                            <th>Alcance</th>
+                            <th>Participación</th>
+                          </tr>
+                        </thead>
+                        <tbody id="marketAudienceTableBody">
+                          <tr>
+                            <td colspan="3">Sin datos disponibles</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </article>
+
+                  <article class="market-card">
+                    <div class="market-card-header">
+                      <h3>Ubicaciones con mayor respuesta</h3>
+                      <span class="market-card-tag">País</span>
+                    </div>
+
+                    <div class="market-table-wrap">
+                      <table class="market-table">
+                        <thead>
+                          <tr>
+                            <th>Ubicación</th>
+                            <th>Alcance</th>
+                            <th>Participación</th>
+                          </tr>
+                        </thead>
+                        <tbody id="marketLocationTableBody">
+                          <tr>
+                            <td colspan="3">Sin datos disponibles</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </article>
+
+                  <article class="market-card market-card-wide">
+                    <div class="market-card-header">
+                      <h3>Campañas con mayor tracción</h3>
+                      <span class="market-card-tag">Rendimiento</span>
+                    </div>
+
+                    <div class="market-table-wrap">
+                      <table class="market-table">
+                        <thead>
+                          <tr>
+                            <th>Campaña</th>
+                            <th>Clics</th>
+                            <th>CTR</th>
+                            <th>CPC</th>
+                            <th>Gasto</th>
+                          </tr>
+                        </thead>
+                        <tbody id="marketCampaignTableBody">
+                          <tr>
+                            <td colspan="5">Sin datos disponibles</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </article>
+
+                  <article class="market-card market-card-wide">
+                    <div class="market-card-header">
+                      <h3>Insights automáticos</h3>
+                      <span class="market-card-tag">Lectura del periodo</span>
+                    </div>
+
+                    <ul id="marketInsightsList" class="market-insights-list">
+                      <li>
+                        No hay suficientes datos para generar insights
+                        automáticos.
+                      </li>
+                    </ul>
+
+                    <div class="market-conclusions-grid">
+                      <div class="market-conclusion-card">
+                        <p class="market-card-label">Hallazgo</p>
+                        <p
+                          id="marketConclusionSignal"
+                          class="market-conclusion-text"
+                        >
+                          Esperando datos de Meta para identificar señales del
+                          mercado.
+                        </p>
+                      </div>
+
+                      <div class="market-conclusion-card">
+                        <p class="market-card-label">Lectura</p>
+                        <p
+                          id="marketConclusionReading"
+                          class="market-conclusion-text"
+                        >
+                          Aún no hay volumen suficiente para construir una
+                          lectura confiable.
+                        </p>
+                      </div>
+
+                      <div class="market-conclusion-card">
+                        <p class="market-card-label">Acción sugerida</p>
+                        <p
+                          id="marketConclusionAction"
+                          class="market-conclusion-text"
+                        >
+                          Activa campañas y acumula datos para comenzar la
+                          comparación de segmentos.
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div id="marketSourcesModal" class="market-sources-modal" aria-hidden="true">
-      <div class="market-sources-backdrop" data-close-market-sources></div>
 
       <div
-        class="market-sources-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="marketSourcesTitle"
+        id="marketSourcesModal"
+        class="market-sources-modal"
+        aria-hidden="true"
       >
-        <div class="market-sources-header">
-          <div>
-            <h3 id="marketSourcesTitle">Gráficas usadas en este estudio</h3>
-            <p>Selecciona una fuente para ir directo a la visualización.</p>
+        <div class="market-sources-backdrop" data-close-market-sources></div>
+
+        <div
+          class="market-sources-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="marketSourcesTitle"
+        >
+          <div class="market-sources-header">
+            <div>
+              <h3 id="marketSourcesTitle">Gráficas usadas en este estudio</h3>
+              <p>Selecciona una fuente para ir directo a la visualización.</p>
+            </div>
+
+            <button
+              type="button"
+              class="market-sources-close"
+              data-close-market-sources
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
           </div>
 
-          <button
-            type="button"
-            class="market-sources-close"
-            data-close-market-sources
-            aria-label="Cerrar"
-          >
-            ×
-          </button>
-        </div>
+          <div class="market-sources-grid">
+            <button
+              type="button"
+              class="market-source-card"
+              data-chart-target="ageChart"
+            >
+              <span class="market-source-title">Audiencias</span>
+              <span class="market-source-text">Gráfica de edad y género.</span>
+            </button>
 
-        <div class="market-sources-grid">
-          <button type="button" class="market-source-card" data-chart-target="ageChart">
-            <span class="market-source-title">Audiencias</span>
-            <span class="market-source-text">Gráfica de edad y género.</span>
-          </button>
+            <button
+              type="button"
+              class="market-source-card"
+              data-chart-target="countryChart"
+            >
+              <span class="market-source-title">Ubicaciones</span>
+              <span class="market-source-text"
+                >Gráfica de alcance por país.</span
+              >
+            </button>
 
-          <button type="button" class="market-source-card" data-chart-target="countryChart">
-            <span class="market-source-title">Ubicaciones</span>
-            <span class="market-source-text">Gráfica de alcance por país.</span>
-          </button>
+            <button
+              type="button"
+              class="market-source-card"
+              data-chart-target="regionChart"
+            >
+              <span class="market-source-title">Regiones</span>
+              <span class="market-source-text"
+                >Detalle regional del país seleccionado.</span
+              >
+            </button>
 
-          <button type="button" class="market-source-card" data-chart-target="regionChart">
-            <span class="market-source-title">Regiones</span>
-            <span class="market-source-text">Detalle regional del país seleccionado.</span>
-          </button>
+            <button
+              type="button"
+              class="market-source-card"
+              data-chart-target="platformChart"
+            >
+              <span class="market-source-title">Plataformas</span>
+              <span class="market-source-text"
+                >Distribución por plataforma publicitaria.</span
+              >
+            </button>
 
-          <button type="button" class="market-source-card" data-chart-target="platformChart">
-            <span class="market-source-title">Plataformas</span>
-            <span class="market-source-text">Distribución por plataforma publicitaria.</span>
-          </button>
+            <button
+              type="button"
+              class="market-source-card"
+              data-chart-target="campaignChart"
+            >
+              <span class="market-source-title">Campañas</span>
+              <span class="market-source-text">Clics por campaña.</span>
+            </button>
 
-          <button type="button" class="market-source-card" data-chart-target="campaignChart">
-            <span class="market-source-title">Campañas</span>
-            <span class="market-source-text">Clics por campaña.</span>
-          </button>
-
-          <button type="button" class="market-source-card" data-chart-target="spendChart">
-            <span class="market-source-title">Inversión</span>
-            <span class="market-source-text">Distribución del gasto por campaña.</span>
-          </button>
+            <button
+              type="button"
+              class="market-source-card"
+              data-chart-target="spendChart"
+            >
+              <span class="market-source-title">Inversión</span>
+              <span class="market-source-text"
+                >Distribución del gasto por campaña.</span
+              >
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="./js/dashboard.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./js/dashboard.js"></script>
+  </body>
 </html>
