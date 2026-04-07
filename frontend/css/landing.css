@@ -1420,6 +1420,18 @@ img {
   background: linear-gradient(90deg, #57c9d1 0%, #3fb7c0 100%);
 }
 
+.dashboard-logo-image {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  display: block;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
+  background: #ffffff;
+}
+
 @media (max-width: 640px) {
   .mini-donut-wrap-rich {
     grid-template-columns: 1fr;
